@@ -513,7 +513,8 @@ internal sealed class MineralSiftingCard : Card, ILouisCard
 			},
 			new AAddCard {
 				card = new FadingDiamondCard(),
-				destination = CardDestination.Discard
+				destination = CardDestination.Discard,
+				omitFromTooltips = true
 			}
 		],
 		Upgrade.B => [
@@ -525,11 +526,13 @@ internal sealed class MineralSiftingCard : Card, ILouisCard
 			new AAddCard {
 				card = new FadingDiamondCard(),
 				destination = CardDestination.Discard,
-				timer = -0.3
+				timer = -0.3,
+				omitFromTooltips = true
 			},
 			new AAddCard {
 				card = new FadingDiamondCard(),
-				destination = CardDestination.Hand
+				destination = CardDestination.Hand,
+				omitFromTooltips = true
 			}
 		],
 		_ => [
@@ -540,7 +543,8 @@ internal sealed class MineralSiftingCard : Card, ILouisCard
 			},
 			new AAddCard {
 				card = new FadingDiamondCard(),
-				destination = CardDestination.Discard
+				destination = CardDestination.Discard,
+				omitFromTooltips = true
 			}
 		]
 	};
@@ -1011,7 +1015,7 @@ internal sealed class EncrustCard : Card, ILouisCard
 			Meta = new()
 			{
 				deck = ModEntry.Instance.LouisDeck.Deck,
-				rarity = Rarity.common,
+				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
@@ -1023,6 +1027,7 @@ internal sealed class EncrustCard : Card, ILouisCard
 	public override CardData GetData(State state) => new() {
 		cost = upgrade == Upgrade.A ? 0 : 1,
 		retain = upgrade == Upgrade.B,
+		exhaust = true,
 		description = ModEntry.Instance.Localizations.Localize(["card", "Encrust", "description"]),
 		artTint = "ffffff"
 	};
@@ -1042,7 +1047,7 @@ internal sealed class PolishCard : Card, IHasCustomCardTraits, ILouisCard
 			Meta = new()
 			{
 				deck = ModEntry.Instance.LouisDeck.Deck,
-				rarity = Rarity.common,
+				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B],
 				dontOffer = true
 			},
@@ -1053,6 +1058,7 @@ internal sealed class PolishCard : Card, IHasCustomCardTraits, ILouisCard
 
 	public override CardData GetData(State state) => new() {
 		cost = upgrade == Upgrade.A ? 0 : 1,
+		exhaust = true,
 		description = ModEntry.Instance.Localizations.Localize(["card", "Polish", "description"]),
 		artTint = "ffffff"
 	};

@@ -21,6 +21,7 @@ public class GemManager
     private static IModData ModData => ModEntry.Instance.Helper.ModData;
 
     internal static int usedGems = 0;
+    internal static int bonusGems = 0;
 
     internal static readonly string LastGemmedTurnKey = "LastGemmedTurn";
     internal static readonly string DontUseGemKey = "DontUseGem";
@@ -129,6 +130,7 @@ public class GemManager
                 ModData.SetModData(action, DontUseGemKey, true);
             }
         }
+        bonusGems = GetGemHandCount(s, c);
         actions.Add(new AResetUsedGems {
             canRunAfterKill = true
         });
@@ -224,7 +226,7 @@ public class GemManager
 
     private static int GetGemHandCount_b(G g, Combat c, CardAction action) {
         if (!ModData.TryGetModData(action, DontUseGemKey, out bool value) || !value)
-            return GetGemHandCount(g.state, c) - usedGems;
+            return bonusGems - usedGems;//GetGemHandCount(g.state, c) - usedGems;
         return 0;
     }
 

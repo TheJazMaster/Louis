@@ -10,5 +10,6 @@ public class AResetUsedGems : CardAction
 	{
 		timer = 0;
 		GemManager.usedGems = 0;
+		GemManager.bonusGems = 0;
 	}
 }

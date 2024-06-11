@@ -7,5 +7,16 @@ namespace TheJazMaster.Louis;
 
 public sealed class ApiImplementation : ILouisApi
 {
-	ModEntry Instance = ModEntry.Instance;
+	readonly ModEntry Instance = ModEntry.Instance;
+
+	public int GemHandCount(State s, Combat c) => GemManager.GetGemHandCount(s, c);
+	public AAttack MakeEnfeebleAttack(AAttack attack, int strength) => EnfeebleManager.MakeEnfeebleAttack(attack, strength);
+
+	public Deck LouisDeck => Instance.LouisDeck.Deck;
+	public Status OnslaughtStatus => Instance.OnslaughtStatus.Status;
+	public Status SteadfastStatus => Instance.SteadfastStatus.Status;
+	public ICardTraitEntry HeavyTrait => HeavyManager.HeavyTrait;
+	public ICardTraitEntry GemTrait => GemManager.GemTrait;
+	public ICardTraitEntry PreciousGemTrait => GemManager.PreciousGemTrait;
+	public ICardTraitEntry FleetingTrait => FleetingManager.FleetingTrait;
 }
