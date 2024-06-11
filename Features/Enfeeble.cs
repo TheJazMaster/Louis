@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
-using System.Text.RegularExpressions;
 using Nickel;
 using HarmonyLib;
 
@@ -46,7 +42,7 @@ public class EnfeebleManager
 				return;
 			if (part is null || part.intent is not IntentAttack intent)
 				return;
-			intent.damage = Math.Max(0, intent.damage - GetEnfeeble(attack));
+			intent.damage -= GetEnfeeble(attack);
 		}, 0);
     }
 

@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using System.Threading.Tasks;
 using Nickel;
 using HarmonyLib;
 using System.Reflection;
 using System.Reflection.Emit;
-using Microsoft.Extensions.Logging;
 using TheJazMaster.Louis.Actions;
 
 namespace TheJazMaster.Louis.Features;

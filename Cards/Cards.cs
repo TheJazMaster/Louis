@@ -3,7 +3,6 @@ using TheJazMaster.Louis.Actions;
 using System.Collections.Generic;
 using System.Reflection;
 using TheJazMaster.Louis.Features;
-using System.Runtime;
 
 namespace TheJazMaster.Louis.Cards;
 
@@ -112,8 +111,8 @@ internal sealed class DisplayCaseCard : Card, ILouisCard
 
 	public override CardData GetData(State state) => new() {
 		cost = 1,
-		exhaust = upgrade != Upgrade.A,
-		retain = true,
+		exhaust = upgrade == Upgrade.None,
+		retain = upgrade != Upgrade.B,
 		description = ModEntry.Instance.Localizations.Localize(["card", "DisplayCase", "description", upgrade.ToString()]),
 		artTint = "ffffff"
 	};
@@ -262,21 +261,14 @@ internal sealed class EnlightenmentCard : Card, ILouisCard
 	}
 
 	public override CardData GetData(State state) => new() {
-		cost = 1,
+		cost = upgrade == Upgrade.B ? 0 : 1,
 		artTint = "ffffff"
 	};
 
 	public override List<CardAction> GetActions(State s, Combat c) => upgrade switch {
 		Upgrade.B => [
 			new ADrawCard {
-				count = 2
-			},
-			new ADrawCard {
-				count = 3,
-				shardcost = 1
-			},
-			new ADrawCard {
-				count = 3,
+				count = 2,
 				shardcost = 1
 			}
 		],
@@ -450,7 +442,7 @@ internal sealed class GemcutterCard : Card, IHasCustomCardTraits, ILouisCard
 		artTint = "ffffff"
 	};
 
-	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade == Upgrade.B ? [] : new HashSet<ICardTraitEntry>() { HeavyManager.HeavyTrait };
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade == Upgrade.None ? new HashSet<ICardTraitEntry>() { HeavyManager.HeavyTrait } : [];
 	
 	public override List<CardAction> GetActions(State s, Combat c) => upgrade switch {
 		Upgrade.B => [

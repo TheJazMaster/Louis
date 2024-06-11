@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Xna.Framework.Graphics;
 using Nickel;
-using Nickel.Models.Content;
 using TheJazMaster.Louis.Actions;
 using TheJazMaster.Louis.Cards;
 using TheJazMaster.Louis.Features;

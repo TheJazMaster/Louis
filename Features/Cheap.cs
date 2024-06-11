@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nanoray.Shrike;
-using Nanoray.Shrike.Harmony;
-using System.Text.RegularExpressions;
 using Nickel;
 using HarmonyLib;
 

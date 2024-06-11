@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Nickel;
 using TheJazMaster.Louis.Features;
 

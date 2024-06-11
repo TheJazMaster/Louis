@@ -1,10 +1,7 @@
 ﻿using HarmonyLib;
-using Microsoft.Extensions.Logging;
 using Nanoray.Shrike;
 using Nanoray.Shrike.Harmony;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using TheJazMaster.Louis.Artifacts;

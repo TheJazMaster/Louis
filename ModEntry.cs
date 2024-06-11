@@ -1,13 +1,10 @@
-﻿using FMOD;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Microsoft.Extensions.Logging;
 using Nanoray.PluginManager;
 using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using TheJazMaster.Louis.Actions;
 using TheJazMaster.Louis.Artifacts;
 using TheJazMaster.Louis.Cards;
 using TheJazMaster.Louis.Features;
