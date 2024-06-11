@@ -1,0 +1,199 @@
+{
+    "character": {
+        "name": "Louis",
+        "description": [
+            "<c=A63447>LOUIS</c>",
+            "Who knows."
+        ]
+    },
+    "trait": {
+        "gem": {
+            "name": "Gem",
+            "description": "Fulfills 1 shard cost on all cards in hand that haven't been played yet this turn."
+        },
+        "preciousGem": {
+            "name": "Precious Gem",
+            "description": "Fulfills 2 shard cost on all cards in hand that haven't been played yet this turn."
+        },
+        "heavy": {
+            "name": "Heavy",
+            "nameUsed": "Heavy (inactive)",
+            "description": "This card is not discarded or exhausted at the end of the turn it is drawn."
+        },
+        "fleeting": {
+            "name": "Fleeting",
+            "description": "If this card is in your hand at the end of your turn, it is exhausted."
+        }
+    },
+    "action": {
+        "enfeeble": {
+            "name": "enfeeble",
+            "description": "Lower the damage of the targeted ship part by <c=keyword>{{Amount}}</c> for the turn."
+        },
+        "exhaustForShard": {
+            "name": "exhaust for shard",
+            "description": "<c=cardtrait>Exhaust</c> a card to gain <c=keyword>{{Amount}}</c> <c=status>SHARD.",
+            "cardSelectText": "Select a card to exhaust.",
+            "showCardText": "Exhausted!"
+        },
+        "exhaustGemForShard": {
+            "name": "exhaust gem for shard",
+            "description": "Exhaust a <c=cardtrait>gem</c> to gain <c=keyword>{{Amount}}</c> <c=status>SHARD.",
+            "cardSelectText": "Select a <c=cardtrait>gem</c> to exhaust.",
+            "showCardText": "Exhausted!"
+        },
+        "applyGem": {
+            "name": "apply gem",
+            "description": "Give the rightmost <c=keyword>{{Amount}}</c> cards <c=cardtrait>gem</c> {{Duration}}."
+        },
+        "makeGemPrecious": {
+            "name": "upgrade gem",
+            "description": "Remove <c=cardtrait>gem</c> from this card and apply <c=cardtrait>precious gem</c> {{Duration}}."
+        },
+        "makeCheapAndExhaust": {
+            "name": "reduce cost and exhaust",
+            "cardSelectText": "Select a card that will cost 1 less energy and <c=downside>exhaust</c>.",
+            "showCardText": "Done!"
+        }
+    },
+    "status": {
+        "Steadfast": {
+            "name": "Steadfast",
+            "description": "Gain <c=keyword>{0}</c> <c=status>TEMP SHIELD</c> every time a card is <c=cardtrait>exhausted</c>. Effect is doubled if the card wasn't <c=cardtrait>temporary</c>.",
+            "descriptionAlt": "Increase the value of X on all cards by <c=keyword>{Amount}</c>. <c=downside>Decreases by 1 at the end of the turn."
+        },
+        "Onslaught": {
+            "name": "Onslaught",
+            "description": "Gain <c=keyword>{0}</c> <c=card>Burst Shots</c> at the start of every turn."
+        }
+    },
+    "artifact": {
+        "GrandEntrance": {
+            "name": "GRAND ENTRANCE",
+            "description": "At the start of combat, gain 3 <c=card>Burst Shots."
+        },
+        "BlissfulIgnorance": {
+            "name": "BLISSFUL IGNORANCE",
+            "description": "Choose 2 cards in your deck that don't <c=cardtrait>exhaust</c>. They cost 1 less <c=energy>energy</c> and <c=cardtrait>exhaust."
+        },
+        "BlackRose": {
+            "name": "BLACK ROSE",
+            "description": "The first time a non-<c=cardtrait>temp</c> card would be <c=cardtrait>exhausted</c>, it is not."
+        },
+        "JewelryKit": {
+            "name": "JEWELRY KIT",
+            "description": "Add an <c=card>Encrust</c> and a <c=card>Polish</c> to your deck."
+        },
+        "OsmiumRing": {
+            "name": "OSMIUM RING",
+            "description": "All cards are <c=cardtrait>heavy."
+        }
+    },
+    "card": {
+        "Ruby": {
+            "name": "Ruby"
+        },
+        "GlitzBlitz": {
+            "name": "Glitz Blitz"
+        },
+        "DisplayCase": {
+            "name": "Display Case",
+            "description": {
+                "None": "Add a <c=card>Fading Diamond</c> to your hand.",
+                "A": "Add a <c=card>Fading Diamond</c> to your hand.",
+                "B": "Add a <c=card>Fading Diamond B</c> to your hand."
+            }
+        },
+        "FlashShot": {
+            "name": "Flash Shot"
+        },
+        "PotatoStone": {
+            "name": "Potato Stone"
+        },
+        "PompAndFlair": {
+            "name": "Pomp and Flair"
+        },
+        "Enlightenment": {
+            "name": "Enlighten-\nment"
+        },
+        "GlamourShot": {
+            "name": "Glamour Shot"
+        },
+        "Grace": {
+            "name": "Grace"
+        },
+        "Sapphire": {
+            "name": "Sapphire"
+        },
+        "Encrust": {
+            "name": "Encrust",
+            "description": "Rightmost card gains <c=cardtrait>gem</c> for the rest of combat."
+        },
+        "Gemcutter": {
+            "name": "Gemcutter",
+            "description": {
+                "None": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard.",
+                "A": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard.",
+                "B": "Choose a card in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard."
+            }
+        },
+        "MineralSifting": {
+            "name": "Mineral Sifting",
+            "description": {
+                "None": "Add a <c=card>Fading Diamond</c> to your <c=keyword>draw and discard piles</c>.",
+                "A": "Draw a card. Add a <c=card>Fading Diamond</c> to your <c=keyword>draw and discard piles</c>.",
+                "B": "Add a <c=card>Fading Diamond</c> to your <c=keyword>draw and discard piles</c>, and your <c=keyword>hand</c>."
+            }
+        },
+        "HeartBreaker": {
+            "name": "Heart-Breaker"
+        },
+        "SweetNothings": {
+            "name": "Sweet Nothings"
+        },
+        "ThousandBlows": {
+            "name": "Thousand Blows"
+        },
+        "Ensnare": {
+            "name": "Ensnare"
+        },
+        "Emerald": {
+            "name": "Emerald"
+        },
+        "MagnumOpus": {
+            "name": "Magnum Opus",
+            "description": {
+                "None": "Add an <c=card>Unobtainium</c> to your hand.",
+                "A": "Add an <c=card>Unobtainium</c> to your hand.",
+                "B": "Add an <c=card>Unobtainium B</c> to your hand."
+            }
+        },
+        "FibonacciFlurry": {
+            "name": "Fibonacci Flurry"
+        },
+        "Polish": {
+            "name": "Polish",
+            "description": "Choose a <c=cardtrait>gem</c> in hand. Make it <c=cardtrait>precious</c> for the rest of combat."
+        },
+        "LoveAndWar": {
+            "name": "Love and War"
+        },
+        "Steadfast": {
+            "name": "Steadfast"
+        },
+        "BurstShot": {
+            "name": "Burst Shot"
+        },
+        "FadingDiamond": {
+            "name": "Fading Diamond",
+            "description": "Unplayable."
+        },
+        "Unobtainium": {
+            "name": "Unobtainium",
+            "description": "Unplayable."
+        },
+        "LouisExe": {
+            "name": "Louis.EXE"
+        }
+    }
+}
