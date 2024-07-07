@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>TheJazMaster.Louis</RootNamespace>
-		<Version>1.0.0</Version>
 		<IncludedModProjectPaths>I18n;Sprites</IncludedModProjectPaths>
 
 		<TargetFramework>net8.0</TargetFramework>

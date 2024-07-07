@@ -1,5 +1,6 @@
 using Nickel;
 using HarmonyLib;
+using System;
 
 namespace TheJazMaster.Louis.Features;
 #nullable enable
@@ -20,7 +21,7 @@ public class CheapManager
 
     private static void Card_GetDataWithOverrides_Postfix(State state, ref CardData __result, Card __instance) {
         if (ModData.TryGetModData(__instance, CheapKey, out int amount)) {
-            __result.cost -= amount;
+            __result.cost = Math.Max(0, __result.cost - amount);
         }
     }
 

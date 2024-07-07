@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using HarmonyLib;
 using TheJazMaster.Louis.Cards;
 
 namespace TheJazMaster.Louis.Features;
 #nullable enable
 
-public class StatusManager : IStatusLogicHook
+public class StatusManager : IStatusLogicHook, IStatusRenderHook
 {
     private static ModEntry Instance => ModEntry.Instance;
 
@@ -14,6 +15,7 @@ public class StatusManager : IStatusLogicHook
     public StatusManager()
     {
         ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
+        ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
 
         ModEntry.Instance.Harmony.TryPatch(
 		    logger: ModEntry.Instance.Logger,
@@ -52,4 +54,19 @@ public class StatusManager : IStatusLogicHook
         }
 		return false;
 	}
+    
+    public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips) {
+		if (status == Onslaught) return [
+            ..tooltips,
+            new TTCard {
+                card = new BurstShotCard()
+            }
+        ];
+        if (status == Steadfast) return [
+            ..tooltips,
+            ..StatusMeta.GetTooltips(Status.tempShield, 1),
+            new TTGlossary("cardtrait.exhaust")
+        ];
+        return tooltips;
+    }
 }

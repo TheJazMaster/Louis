@@ -28,7 +28,7 @@ public sealed class ModEntry : SimpleMod {
 	internal ILocalizationProvider<IReadOnlyList<string>> AnyLocalizations { get; }
 	internal ILocaleBoundNonNullLocalizationProvider<IReadOnlyList<string>> Localizations { get; }
 
-    internal ICharacterEntry LouisCharacter { get; }
+    internal IPlayableCharacterEntryV2 LouisCharacter { get; }
 
     internal IDeckEntry LouisDeck { get; }
 
@@ -202,12 +202,12 @@ public sealed class ModEntry : SimpleMod {
 		foreach (var artifactType in AllArtifactTypes)
 			AccessTools.DeclaredMethod(artifactType, nameof(ILouisArtifact.Register))?.Invoke(null, [helper]);
 
-		helper.Content.Cards.OnGetVolatileCardTraitOverrides += (_, data) => {
+		helper.Content.Cards.OnGetDynamicInnateCardTraitOverrides += (card, data) => {
 			State state = data.State;
 			if (state.route is Combat combat) {
 				foreach (Artifact item in data.State.EnumerateAllArtifacts()) {
 					if (item is OsmiumRingArtifact) {
-						data.SetVolatileOverride(HeavyManager.HeavyTrait, true);
+						data.SetOverride(HeavyManager.HeavyTrait, true);
 					}
 				}
 			}
@@ -220,7 +220,7 @@ public sealed class ModEntry : SimpleMod {
             }
         });
 
-        LouisCharacter = helper.Content.Characters.RegisterCharacter("Louis", new()
+        LouisCharacter = helper.Content.Characters.V2.RegisterPlayableCharacter("Louis", new()
 		{
 			Deck = LouisDeck.Deck,
 			Description = AnyLocalizations.Bind(["character", "description"]).Localize,
@@ -231,7 +231,7 @@ public sealed class ModEntry : SimpleMod {
 			ExeCardType = typeof(LouisExeCard),
 			NeutralAnimation = new()
 			{
-				Deck = LouisDeck.Deck,
+				CharacterType = LouisDeck.Deck.Key(),
 				LoopTag = "neutral",
 				Frames = [
 					LouisPortrait.Sprite
@@ -239,7 +239,7 @@ public sealed class ModEntry : SimpleMod {
 			},
 			MiniAnimation = new()
 			{
-				Deck = LouisDeck.Deck,
+				CharacterType = LouisDeck.Deck.Key(),
 				LoopTag = "mini",
 				Frames = [
 					LouisPortraitMini.Sprite
@@ -247,15 +247,15 @@ public sealed class ModEntry : SimpleMod {
 			}
 		});
 
-		helper.Content.Characters.RegisterCharacterAnimation("GameOver", new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation("GameOver", new()
 		{
-			Deck = LouisDeck.Deck,
+			CharacterType = LouisDeck.Deck.Key(),
 			LoopTag = "gameover",
 			Frames = GameoverFrames.Select(entry => entry.Sprite).ToList()
 		});
-		helper.Content.Characters.RegisterCharacterAnimation("Squint", new()
+		helper.Content.Characters.V2.RegisterCharacterAnimation("Squint", new()
 		{
-			Deck = LouisDeck.Deck,
+			CharacterType = LouisDeck.Deck.Key(),
 			LoopTag = "squint",
 			Frames = SquintFrames.Select(entry => entry.Sprite).ToList()
 		});
@@ -266,7 +266,7 @@ public sealed class ModEntry : SimpleMod {
 
 	private static List<ISpriteEntry> RegisterTalkSprites(string fileSuffix)
     {
-        var files = Instance.Package.PackageRoot.GetRelative($"Sprites/Character/{fileSuffix}").AsDirectory?.GetFilesRecursively();
+        var files = Instance.Package.PackageRoot.GetRelative($"Sprites/Character/{fileSuffix}").AsDirectory?.GetFilesRecursively().Where(f => f.Name.EndsWith(".png"));
 		List<ISpriteEntry> sprites = [];
 		if (files != null) {
 			foreach (IFileInfo file in files) {

@@ -277,7 +277,7 @@ internal sealed class EnlightenmentCard : Card, ILouisCard
 				count = upgrade == Upgrade.A ? 4 : 2
 			},
 			new ADrawCard {
-				count = upgrade == Upgrade.A ? 2 : 3,
+				count = upgrade == Upgrade.A ? 1 : 2,
 				shardcost = 1
 			}
 		]
@@ -436,9 +436,9 @@ internal sealed class GemcutterCard : Card, IHasCustomCardTraits, ILouisCard
 	}
 
 	public override CardData GetData(State state) => new() {
-		cost = upgrade == Upgrade.B ? 1 : 0,
+		cost = 0,
 		retain = upgrade == Upgrade.A,
-		description = ModEntry.Instance.Localizations.Localize(["card", "Gemcutter", "description", upgrade.ToString()]),
+		description = ModEntry.Instance.Localizations.Localize(["card", "Gemcutter", "description", upgrade.ToString()], new { Amount = 2 }),
 		artTint = "ffffff"
 	};
 
@@ -449,7 +449,7 @@ internal sealed class GemcutterCard : Card, IHasCustomCardTraits, ILouisCard
 			new ACardSelectImproved
 			{
 				browseAction = new ATurnCardIntoShard {
-					amount = 3
+					amount = 2
 				},
 				browseSource = CardBrowse.Source.Hand,
 				filterUUID = uuid
@@ -459,7 +459,7 @@ internal sealed class GemcutterCard : Card, IHasCustomCardTraits, ILouisCard
 			new ACardSelectImproved
 			{
 				browseAction = new ATurnCardIntoShard {
-					amount = 3
+					amount = 2
 				},
 				browseSource = CardBrowse.Source.Hand,
 				filterUUID = uuid
@@ -471,7 +471,9 @@ internal sealed class GemcutterCard : Card, IHasCustomCardTraits, ILouisCard
 
 internal sealed class MineralSiftingCard : Card, ILouisCard
 {
+	internal static Spr Art;
 	public static void Register(IModHelper helper) {
+		Art = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("Sprites/Cards/MineralSifting.png")).Sprite;
 		helper.Content.Cards.RegisterCard("MineralSifting", new()
 		{
 			CardType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -481,7 +483,7 @@ internal sealed class MineralSiftingCard : Card, ILouisCard
 				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
-			Art = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("Sprites/Cards/MineralSifting.png")).Sprite,
+			Art = Art,
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "MineralSifting", "name"]).Localize
 		});
 	}
@@ -572,7 +574,7 @@ internal sealed class HeartBreakerCard : Card, IHasCustomCardTraits, ILouisCard
 
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-			damage = GetDmg(s, upgrade == Upgrade.B ? 7 : (upgrade == Upgrade.A ? 6 : 5)),
+			damage = GetDmg(s, upgrade == Upgrade.B ? 6 : (upgrade == Upgrade.A ? 5 : 4)),
 		}, upgrade == Upgrade.B ? 4 : (upgrade == Upgrade.A ? 3 : 2))
 	];
 }
@@ -777,11 +779,12 @@ internal sealed class FibonacciFlurryCard : Card, ILouisCard
 
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		new AAttack {
-			damage = GetDmg(s, 1)
+			damage = GetDmg(s, 1),
+			shardcost = upgrade == Upgrade.B ? null : 1
 		},
 		new AAttack {
 			damage = GetDmg(s, 1),
-			shardcost = upgrade == Upgrade.B ? null : 1
+			shardcost = 1
 		},
 		new AAttack {
 			damage = GetDmg(s, 2),

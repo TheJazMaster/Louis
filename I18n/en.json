@@ -9,11 +9,11 @@
     "trait": {
         "gem": {
             "name": "Gem",
-            "description": "Fulfills 1 shard cost on all cards in hand that haven't been played yet this turn."
+            "description": "While in hand fulfills 1 shard cost on all cards that haven't been played yet this turn."
         },
         "preciousGem": {
             "name": "Precious Gem",
-            "description": "Fulfills 2 shard cost on all cards in hand that haven't been played yet this turn."
+            "description": "While in hand fulfills 2 shard cost on all cards that haven't been played yet this turn."
         },
         "heavy": {
             "name": "Heavy",
@@ -114,7 +114,7 @@
             "name": "Pomp and Flair"
         },
         "Enlightenment": {
-            "name": "Enlighten-\nment"
+            "name": "Enlighten"
         },
         "GlamourShot": {
             "name": "Glamour Shot"
@@ -132,9 +132,9 @@
         "Gemcutter": {
             "name": "Gemcutter",
             "description": {
-                "None": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard.",
-                "A": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard.",
-                "B": "Choose a card in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain 3 <c=status>shard."
+                "None": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain {{Amount}} <c=status>shard.",
+                "A": "Choose a <c=cardtrait>gem</c> in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain {{Amount}} <c=status>shard.",
+                "B": "Choose a card in <c=keyword>hand</c>. <c=cardtrait>Exhaust</c> it and gain {{Amount}} <c=status>shard."
             }
         },
         "MineralSifting": {
