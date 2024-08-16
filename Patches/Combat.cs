@@ -26,7 +26,7 @@ internal class CombatPatches
 	{
 		return new SequenceBlockMatcher<CodeInstruction>(instructions)
 			.Find(
-				ILMatches.Ldloc<CardData>(originalMethod),
+				ILMatches.Ldloc<CardData>(originalMethod).CreateLdlocInstruction(out var ldData),
 				ILMatches.Ldfld("exhaust"),
 				ILMatches.Ldarg(4),
 				ILMatches.Instruction(OpCodes.Or),
@@ -35,6 +35,7 @@ internal class CombatPatches
 			.PointerMatcher(SequenceMatcherRelativeElement.Last)
 			.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 				new CodeInstruction(OpCodes.Ldarg_1),
+				ldData,
 				ldLoc,
 				new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ApplyRose))),
 				stLoc
@@ -42,8 +43,8 @@ internal class CombatPatches
 			.AllElements();
 	}
 
-	private static bool ApplyRose(State state, bool exhausts) {
-		if (exhausts) {
+	private static bool ApplyRose(State state, CardData data, bool exhausts) {
+		if (exhausts && !data.temporary) {
 			foreach (Artifact item in state.EnumerateAllArtifacts()) {
 				if (item is BlackRoseArtifact artifact && artifact.active) {
 					artifact.active = false;

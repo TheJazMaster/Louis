@@ -28,7 +28,7 @@ public class CustomShowCards : ShowCards
 		TAlign? align = TAlign.Center;
 		Color? outline = Colors.black;
 		Draw.Text(message, 240.0, 69.0, null, color, null, null, null, align, dontDraw: false, null, outline);
-		SharedArt.ButtonText(g2, new Vec(210.0, 193.0), UK.shipUpgrades_continue, Loc.T("uiShared.btnContinue"), null, null, inactive: false, this, null, null, null, null, autoFocus: true);
+		SharedArt.ButtonText(g2, new Vec(210.0, 193.0), StableUK.shipUpgrades_continue, Loc.T("uiShared.btnContinue"), null, null, inactive: false, this, null, null, null, null, autoFocus: true);
 		foreach (Card item2 in list)
 		{
 			G g3 = g2;
