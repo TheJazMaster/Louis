@@ -64,13 +64,15 @@ internal sealed class JewelryKitArtifact : Artifact, ILouisArtifact
 
 	public override void OnReceiveArtifact(State state)
 	{
-		state.GetCurrentQueue().Queue(new AAddCard {
+		(state.GetDialogue()?.actionQueue ?? state.GetCurrentQueue()).Queue(new AAddCard {
 			card = new EncrustCard(),
-			destination = CardDestination.Deck
+			destination = CardDestination.Deck,
+			callItTheDeckNotTheDrawPile = true
 		});
-		state.GetCurrentQueue().Queue(new AAddCard {
+		(state.GetDialogue()?.actionQueue ?? state.GetCurrentQueue()).Queue(new AAddCard {
 			card = new PolishCard(),
-			destination = CardDestination.Deck
+			destination = CardDestination.Deck,
+			callItTheDeckNotTheDrawPile = true
 		});
 	}
 
@@ -166,8 +168,6 @@ internal sealed class BlackRoseArtifact : Artifact, ILouisArtifact
 
 internal sealed class OsmiumRingArtifact : Artifact, ILouisArtifact
 {
-	public bool active = true;
-
 	public static void Register(IModHelper helper)
 	{
 		helper.Content.Artifacts.RegisterArtifact("OsmiumRing", new()
@@ -184,9 +184,14 @@ internal sealed class OsmiumRingArtifact : Artifact, ILouisArtifact
 		});
 	}
 
-	public override void OnCombatEnd(State state)
+	public override void OnReceiveArtifact(State state)
 	{
-		active = true;
+		state.ship.baseDraw -= 1;
+	}
+
+	public override void OnRemoveArtifact(State state)
+	{
+		state.ship.baseDraw += 1;
 	}
 
 	public override List<Tooltip>? GetExtraTooltips() => HeavyManager.HeavyTrait.Configuration.Tooltips!(DB.fakeState, null).ToList();

@@ -66,33 +66,22 @@ internal sealed class GlitzBlitzCard : Card, IHasCustomCardTraits, ILouisCard
 
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade == Upgrade.A ? new HashSet<ICardTraitEntry>() { HeavyManager.HeavyTrait } : [];
 
-	public override List<CardAction> GetActions(State s, Combat c) => upgrade switch {
-		Upgrade.B => [
-			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-				damage = GetDmg(s, 1),
-			}, 1),
-			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-				damage = GetDmg(s, 1),
-				shardcost = 1
-			}, 1),
-			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-				damage = GetDmg(s, 1),
-				shardcost = 1
-			}, 1),
-		],
-		_ => [
-			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-				damage = GetDmg(s, 1),
-			}, 1),
-			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
-				damage = GetDmg(s, 1),
-				shardcost = 1
-			}, 1)
-		]
-	};
+	public override List<CardAction> GetActions(State s, Combat c) => [
+	EnfeebleManager.MakeEnfeebleAttack(new AAttack {
+			damage = GetDmg(s, 1)
+		}, upgrade == Upgrade.B ? 2 : 1),
+		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
+			damage = GetDmg(s, 1),
+			shardcost = 1
+		}, upgrade == Upgrade.B ? 2 : 1),
+		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
+			damage = GetDmg(s, 1),
+			shardcost = 1
+		}, upgrade == Upgrade.B ? 2 : 1)
+	];
 }
 
-internal sealed class DisplayCaseCard : Card, ILouisCard
+internal sealed class DisplayCaseCard : Card, IHasCustomCardTraits, ILouisCard
 {
 	public static void Register(IModHelper helper) {
 		helper.Content.Cards.RegisterCard("DisplayCase", new()
@@ -108,6 +97,8 @@ internal sealed class DisplayCaseCard : Card, ILouisCard
 			Name = ModEntry.Instance.AnyLocalizations.Bind(["card", "DisplayCase", "name"]).Localize
 		});
 	}
+
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade == Upgrade.B ? new HashSet<ICardTraitEntry>() { HeavyManager.HeavyTrait } : [];
 
 	public override CardData GetData(State state) => new() {
 		cost = 1,
@@ -602,19 +593,40 @@ internal sealed class SweetNothingsCard : Card, ILouisCard
 		artTint = "ffffff"
 	};
 
-	public override List<CardAction> GetActions(State s, Combat c) => [
-		new AStatus {
-			status = upgrade == Upgrade.B ? Status.shield : Status.tempShield,
-			statusAmount = 1,
-			targetPlayer = true,
-		},
-		new AStatus {
-			status = Status.shard,
-			statusAmount = 1,
-			targetPlayer = true,
-			shardcost = upgrade == Upgrade.A ? null : 1
-		}
-	];
+	public override List<CardAction> GetActions(State s, Combat c) => upgrade switch {
+		Upgrade.A => [
+			new AStatus {
+				status = Status.tempShield,
+				statusAmount = 1,
+				targetPlayer = true,
+			},
+			new AStatus {
+				status = Status.shard,
+				statusAmount = 1,
+				targetPlayer = true,
+				shardcost = 1
+			},
+			new AStatus {
+				status = Status.shard,
+				statusAmount = 1,
+				targetPlayer = true,
+				shardcost = 1
+			}
+		],
+		_ => [
+			new AStatus {
+				status = upgrade == Upgrade.B ? Status.shield : Status.tempShield,
+				statusAmount = 1,
+				targetPlayer = true,
+			},
+			new AStatus {
+				status = Status.shard,
+				statusAmount = 1,
+				targetPlayer = true,
+				shardcost = 1
+			}
+		]
+	};
 }
 
 

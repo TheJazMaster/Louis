@@ -86,7 +86,7 @@
         },
         "OsmiumRing": {
             "name": "OSMIUM RING",
-            "description": "All cards are <c=cardtrait>heavy."
+            "description": "All cards are <c=cardtrait>heavy. <c=downside>Draw -1 card every turn.</c>"
         }
     },
     "card": {

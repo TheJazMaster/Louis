@@ -1,6 +1,6 @@
 {
     "UniqueName": "TheJazMaster.Louis",
-    "Version": "1.0.8",
+    "Version": "1.0.11",
     "RequiredApiVersion": "0.1.0",
     "EntryPointAssembly": "Louis.dll",
     "LoadPhase": "AfterDbInit",
