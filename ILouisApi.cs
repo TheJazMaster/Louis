@@ -6,6 +6,7 @@ namespace TheJazMaster.Louis;
 public interface ILouisApi
 {
 	int GemHandCount(State s, Combat c);
+	int GemHandCount(State s, Combat c, int? excludedId);
 	AAttack MakeEnfeebleAttack(AAttack attack, int strength);
 
 	Deck LouisDeck { get; }
