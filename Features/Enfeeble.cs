@@ -90,22 +90,20 @@ public class EnfeebleManager
 	{
 		if (action is not AAttack attack)
 			return true;
-		if (!IsEnfeeble(attack))
-			return true;
 
-		var copy = Mutil.DeepCopy(attack);
-		ModEntry.Instance.Helper.ModData.RemoveModData(copy, EnfeebleApplierKey);
+		if (ModEntry.Instance.Helper.ModData.GetOptionalModData<int>(attack, EnfeebleApplierKey) is not { } amount)
+			return true;
+		ModEntry.Instance.Helper.ModData.RemoveModData(attack, EnfeebleApplierKey);
 
 		var position = g.Push(rect: new()).rect.xy;
 		int initialX = (int)position.x;
 
-		position.x += Card.RenderAction(g, state, copy, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
+		position.x += Card.RenderAction(g, state, attack, dontDraw, shardAvailable, stunChargeAvailable, bubbleJuiceAvailable);
 		g.Pop();
 
 		__result = (int)position.x - initialX;
 		__result += 2;
 
-		int amount = GetEnfeeble(attack);
 		if (!dontDraw)
 		{
 			Draw.Sprite(ModEntry.Instance.EnfeebleIcon.Sprite, initialX + __result, position.y, color: action.disabled ? Colors.disabledIconTint : Colors.white);
@@ -116,6 +114,7 @@ public class EnfeebleManager
 		}
 		__result += amount.ToString().Length * 6;
 
+		ModEntry.Instance.Helper.ModData.SetModData(attack, EnfeebleApplierKey, amount);
 		return false;
 	}
 }
