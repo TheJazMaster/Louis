@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using HarmonyLib;
+using Shockah.Kokoro;
 using TheJazMaster.Louis.Cards;
 
 namespace TheJazMaster.Louis.Features;
 #nullable enable
 
-public class StatusManager : IStatusLogicHook, IStatusRenderHook
+public class StatusManager : IKokoroApi.IV2.IStatusLogicApi.IHook, IKokoroApi.IV2.IStatusRenderingApi.IHook
 {
     private static ModEntry Instance => ModEntry.Instance;
 
@@ -14,8 +15,8 @@ public class StatusManager : IStatusLogicHook, IStatusRenderHook
 
     public StatusManager()
     {
-        ModEntry.Instance.KokoroApi.RegisterStatusLogicHook(this, 0);
-        ModEntry.Instance.KokoroApi.RegisterStatusRenderHook(this, 0);
+        ModEntry.Instance.KokoroApi.StatusLogic.RegisterHook(this);
+        ModEntry.Instance.KokoroApi.StatusRendering.RegisterHook(this);
 
         ModEntry.Instance.Harmony.TryPatch(
 		    logger: ModEntry.Instance.Logger,
@@ -37,17 +38,17 @@ public class StatusManager : IStatusLogicHook, IStatusRenderHook
         }
     }
 
-    public bool HandleStatusTurnAutoStep(State state, Combat combat, StatusTurnTriggerTiming timing, Ship ship, Status status, ref int amount, ref StatusTurnAutoStepSetStrategy setStrategy)
+    public bool HandleStatusTurnAutoStep(IKokoroApi.IV2.IStatusLogicApi.IHook.IHandleStatusTurnAutoStepArgs args)
 	{
-		if (status != Onslaught)
+		if (args.Status != Onslaught)
 			return false;
-		if (timing != StatusTurnTriggerTiming.TurnStart)
+		if (args.Timing != IKokoroApi.IV2.IStatusLogicApi.StatusTurnTriggerTiming.TurnStart)
 			return false;
 
-        if (amount > 0) {
-            combat.Queue(new AAddCard {
+        if (args.Amount > 0) {
+            args.Combat.Queue(new AAddCard {
                 card = new BurstShotCard(),
-                amount = amount,
+                amount = args.Amount,
                 destination = CardDestination.Hand,
                 statusPulse = Onslaught
             });
@@ -55,18 +56,18 @@ public class StatusManager : IStatusLogicHook, IStatusRenderHook
 		return false;
 	}
     
-    public List<Tooltip> OverrideStatusTooltips(Status status, int amount, Ship? ship, List<Tooltip> tooltips) {
-		if (status == Onslaught) return [
-            ..tooltips,
+    public IReadOnlyList<Tooltip> OverrideStatusTooltips(IKokoroApi.IV2.IStatusRenderingApi.IHook.IOverrideStatusTooltipsArgs args) {
+		if (args.Status == Onslaught) return [
+            ..args.Tooltips,
             new TTCard {
                 card = new BurstShotCard()
             }
         ];
-        if (status == Steadfast) return [
-            ..tooltips,
+        if (args.Status == Steadfast) return [
+            ..args.Tooltips,
             ..StatusMeta.GetTooltips(Status.tempShield, 1),
             new TTGlossary("cardtrait.exhaust")
         ];
-        return tooltips;
+        return args.Tooltips;
     }
 }
