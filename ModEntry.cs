@@ -5,6 +5,7 @@ using Nickel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shockah.Kokoro;
 using TheJazMaster.Louis.Artifacts;
 using TheJazMaster.Louis.Cards;
 using TheJazMaster.Louis.Features;
@@ -16,7 +17,7 @@ public sealed class ModEntry : SimpleMod {
     internal static ModEntry Instance { get; private set; } = null!;
 
     internal Harmony Harmony { get; }
-	internal IKokoroApi KokoroApi { get; }
+	internal IKokoroApi.IV2 KokoroApi { get; }
 	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
 
@@ -124,7 +125,7 @@ public sealed class ModEntry : SimpleMod {
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
 		MoreDifficultiesApi = helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties");
-		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!;
+		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
 		// DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
 
 		AnyLocalizations = new JsonLocalizationProvider(
