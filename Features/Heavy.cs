@@ -6,6 +6,7 @@ using Nickel;
 using HarmonyLib;
 using System.Reflection.Emit;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace TheJazMaster.Louis.Features;
 #nullable enable

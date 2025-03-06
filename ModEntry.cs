@@ -36,14 +36,9 @@ public sealed class ModEntry : SimpleMod {
 	internal IStatusEntry OnslaughtStatus { get; }
     internal IStatusEntry SteadfastStatus { get; }
 
-    internal ISpriteEntry LouisPortrait { get; }
     internal ISpriteEntry LouisPortraitMini { get; }
     internal ISpriteEntry LouisFrame { get; }
     internal ISpriteEntry LouisCardBorder { get; }
-
-	internal List<ISpriteEntry> NeutralFrames { get; } = [];
-	internal List<ISpriteEntry> SquintFrames { get; } = [];
-	internal List<ISpriteEntry> GameoverFrames { get; } = [];
 
     internal ISpriteEntry GemIcon { get; }
     internal ISpriteEntry MakeGemIcon { get; }
@@ -139,11 +134,6 @@ public sealed class ModEntry : SimpleMod {
 		DynamicWidthCardAction.ApplyPatches(Harmony);
 		CombatPatches.ApplyPatches(Harmony);
 
-		NeutralFrames = RegisterTalkSprites("Neutral");
-		SquintFrames = RegisterTalkSprites("Squint");
-		GameoverFrames = RegisterTalkSprites("Gameover");
-
-        LouisPortrait = NeutralFrames[0];
         LouisPortraitMini = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/Character/Louis_mini.png"));
 		LouisFrame = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/Character/Louis_panel.png"));
         LouisCardBorder = helper.Content.Sprites.RegisterSprite(package.PackageRoot.GetRelativeFile("Sprites/Cards/Border.png"));
@@ -230,14 +220,7 @@ public sealed class ModEntry : SimpleMod {
 				cards = [ new RubyCard(), new GlitzBlitzCard() ],
 			},
 			ExeCardType = typeof(LouisExeCard),
-			NeutralAnimation = new()
-			{
-				CharacterType = LouisDeck.Deck.Key(),
-				LoopTag = "neutral",
-				Frames = [
-					LouisPortrait.Sprite
-				]
-			},
+			NeutralAnimation = RegisterTalkSprites("Neutral").Configuration,
 			MiniAnimation = new()
 			{
 				CharacterType = LouisDeck.Deck.Key(),
@@ -248,32 +231,24 @@ public sealed class ModEntry : SimpleMod {
 			}
 		});
 
-		helper.Content.Characters.V2.RegisterCharacterAnimation("GameOver", new()
-		{
-			CharacterType = LouisDeck.Deck.Key(),
-			LoopTag = "gameover",
-			Frames = GameoverFrames.Select(entry => entry.Sprite).ToList()
-		});
-		helper.Content.Characters.V2.RegisterCharacterAnimation("Squint", new()
-		{
-			CharacterType = LouisDeck.Deck.Key(),
-			LoopTag = "squint",
-			Frames = SquintFrames.Select(entry => entry.Sprite).ToList()
-		});
+		RegisterTalkSprites("Gameover");
+		RegisterTalkSprites("Squint");
     }
 
 	public override object? GetApi(IModManifest requestingMod)
 		=> new ApiImplementation();
 
-	private static List<ISpriteEntry> RegisterTalkSprites(string fileSuffix)
+	private static ICharacterAnimationEntryV2 RegisterTalkSprites(string name)
     {
-        var files = Instance.Package.PackageRoot.GetRelative($"Sprites/Character/{fileSuffix}").AsDirectory?.GetFilesRecursively().Where(f => f.Name.EndsWith(".png"));
-		List<ISpriteEntry> sprites = [];
-		if (files != null) {
-			foreach (IFileInfo file in files) {
-				sprites.Add(Instance.Helper.Content.Sprites.RegisterSprite(file));
-			}
-		}
-		return sprites;
+        return Instance.Helper.Content.Characters.V2.RegisterCharacterAnimation(name, new()
+		{
+			CharacterType = Instance.LouisDeck.Deck.Key(),
+			LoopTag = name.ToLower(),
+			Frames = Enumerable.Range(0, 100)
+				.Select(i => Instance.Package.PackageRoot.GetRelativeFile($"Sprites/Character/{name}/Louis_{name.ToLower()}_{i}.png"))
+				.TakeWhile(f => f.Exists)
+				.Select(f => Instance.Helper.Content.Sprites.RegisterSprite(f).Sprite)
+				.ToList()
+		});
     }
 }

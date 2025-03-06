@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using daisyowl.text;
-using FSPRO;
 
 namespace TheJazMaster.Louis;
 
 public class CustomShowCards : ShowCards
 {
-	public string message;
+	public required string message;
 
 	public override void Render(G g)
 	{

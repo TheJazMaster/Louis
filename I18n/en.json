@@ -193,7 +193,8 @@
             "description": "Unplayable."
         },
         "LouisExe": {
-            "name": "Louis.EXE"
+            "name": "Louis.EXE",
+            "description": "Gain 1 of {{Amount}} <c=cardtrait>discount, temp</c> <c=A63447>Louis</c> cards and a <c=card>Fading Diamond</c>."
         }
     }
 }

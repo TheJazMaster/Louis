@@ -143,8 +143,8 @@ internal sealed class FlashShotCard : Card, ILouisCard
 
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		new AAttack {
-			damage = GetDmg(s, upgrade == Upgrade.B ? 2 : 1),
-			shardcost = upgrade == Upgrade.A ? null : 1
+			damage = GetDmg(s, upgrade == Upgrade.B ? 3 : upgrade == Upgrade.A ? 2 : 1),
+			shardcost = upgrade == Upgrade.B ? 2 : 1
 		}.ApplyModData(EnfeebleManager.EnfeebleApplierKey, 1),
 	];
 }
@@ -268,7 +268,7 @@ internal sealed class EnlightenmentCard : Card, ILouisCard
 				count = upgrade == Upgrade.A ? 4 : 2
 			},
 			new ADrawCard {
-				count = upgrade == Upgrade.A ? 1 : 2,
+				count = 2,
 				shardcost = 1
 			}
 		]
@@ -324,7 +324,7 @@ internal sealed class GlamourShotCard : Card, ILouisCard
 }
 
 
-internal sealed class GraceCard : Card, ILouisCard
+internal sealed class GraceCard : Card, IHasCustomCardTraits, ILouisCard
 {
 	public static void Register(IModHelper helper) {
 		helper.Content.Cards.RegisterCard("Grace", new()
@@ -342,34 +342,29 @@ internal sealed class GraceCard : Card, ILouisCard
 	}
 
 	public override CardData GetData(State state) => new() {
-		cost = 0,
+		cost = upgrade == Upgrade.B ? 0 : 1,
 		artTint = "ffffff"
 	};
 
-	public override List<CardAction> GetActions(State s, Combat c) => upgrade switch {
-		Upgrade.A => [
-			new AStatus {
-				status = Status.evade,
-				statusAmount = 1,
-				targetPlayer = true,
-				shardcost = 1
-			},
-			new AStatus {
-				status = Status.evade,
-				statusAmount = 1,
-				targetPlayer = true,
-				shardcost = 1
-			},
-		],
-		_ => [
-			new AStatus {
-				status = Status.evade,
-				statusAmount = upgrade == Upgrade.B ? 3 : 1,
-				targetPlayer = true,
-				shardcost = upgrade == Upgrade.B ? 2 : 1
-			},
-		]
+	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade switch {
+		Upgrade.A => new HashSet<ICardTraitEntry> { HeavyManager.HeavyTrait },
+		_ => []
 	};
+
+	public override List<CardAction> GetActions(State s, Combat c) => [
+		new AStatus {
+			status = Status.evade,
+			statusAmount = 1,
+			targetPlayer = true,
+			shardcost = upgrade == Upgrade.B ? 1 : null
+		},
+		new AStatus {
+			status = Status.evade,
+			statusAmount = 1,
+			targetPlayer = true,
+			shardcost = 1
+		},
+	];
 }
 
 
@@ -1103,42 +1098,27 @@ internal sealed class LouisExeCard : Card, ILouisCard
 	public override CardData GetData(State state) => new() {
 		cost = upgrade == Upgrade.A ? 0 : 1,
 		exhaust = true,
-		description = ColorlessLoc.GetDesc(state, upgrade == Upgrade.B ? 3 : 2, ModEntry.Instance.LouisDeck.Deck),
+		description = ModEntry.Instance.Localizations.Localize(["card", "LouisExe", "description"], new { Amount = upgrade == Upgrade.B ? 3 : 2 }),
 		artTint = "ffffff"
     };
 
-	public override List<CardAction> GetActions(State s, Combat c)
-    {
-		Deck deck = ModEntry.Instance.LouisDeck.Deck;
-		return upgrade switch
-		{
-			Upgrade.B => [
-				new ACardOffering
-				{
-					amount = 3,
-					limitDeck = deck,
-					makeAllCardsTemporary = true,
-					overrideUpgradeChances = false,
-					canSkip = false,
-					inCombat = true,
-					discount = -1,
-					dialogueSelector = ".summonLouis"
-				}
-			],
-			_ => [
-				new ACardOffering
-				{
-					amount = 2,
-					limitDeck = deck,
-					makeAllCardsTemporary = true,
-					overrideUpgradeChances = false,
-					canSkip = false,
-					inCombat = true,
-					discount = -1,
-					dialogueSelector = ".summonLouis"
-				}
-			],
-		};
-	}
+	public override List<CardAction> GetActions(State s, Combat c) => [
+		new ACardOffering {
+			amount = upgrade == Upgrade.B ? 3 : 2,
+			limitDeck = ModEntry.Instance.LouisDeck.Deck,
+			makeAllCardsTemporary = true,
+			overrideUpgradeChances = false,
+			canSkip = false,
+			inCombat = true,
+			discount = -1,
+			dialogueSelector = ".summonLouis"
+		},
+		new AAddCard {
+			card = new FadingDiamondCard {
+				temporaryOverride = true
+			},
+			destination = CardDestination.Hand
+		}
+	];
 }
 
