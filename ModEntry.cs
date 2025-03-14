@@ -9,17 +9,27 @@ using Shockah.Kokoro;
 using TheJazMaster.Louis.Artifacts;
 using TheJazMaster.Louis.Cards;
 using TheJazMaster.Louis.Features;
+using System.Threading;
 
-#nullable enable
 namespace TheJazMaster.Louis;
 
 public sealed class ModEntry : SimpleMod {
     internal static ModEntry Instance { get; private set; } = null!;
 
+	internal readonly HookManager<ILouisApi.IHook> HookManager;
     internal Harmony Harmony { get; }
+    internal ApiImplementation Api { get; }
+
+	internal IEssentialsApi? EssentialsApi { get; private set; }
 	internal IKokoroApi.IV2 KokoroApi { get; }
 	internal IMoreDifficultiesApi? MoreDifficultiesApi { get; }
 	internal IDuoArtifactsApi? DuoArtifactsApi { get; }
+	// internal ITyAndSashaApi? TyAndSashaApi { get; }
+	internal IJohnsonApi? JohnsonApi { get; }
+	internal IBucketApi? BucketApi { get; }
+	internal ITuckerApi? TuckerApi { get; }
+	internal ITH34Api? TH34Api { get; }
+	internal IDynaApi? DynaApi { get; }
 
 	internal FleetingManager FleetingManager { get; }
 	internal GemManager GemManager { get; }
@@ -111,17 +121,46 @@ public sealed class ModEntry : SimpleMod {
 		typeof(OsmiumRingArtifact)
 	];
 
+	internal static IReadOnlyList<Type> DuoArtifacts { get; } = [
+		typeof(FreeSpiritedArtifact),
+		typeof(ParalyzerArtifact),
+		typeof(CrystalOscillatorArtifact),
+		typeof(FireStoneArtifact),
+		typeof(DiamondSwordArtifact),
+		typeof(RGBLEDArtifact),
+		typeof(DiamondTierArtifact),
+		typeof(InfinityGemArtifact),
+		typeof(DiamondHandsArtifact),
+		typeof(PositiveReinforcementArtifact),
+		typeof(RockCrusherArtifact),
+		// typeof(LapisLazuliArtifact),
+		typeof(TransienceArtifact),
+		typeof(QuartzResonatorArtifact),
+		typeof(GlitterBombArtifact),
+	];
+
 	internal static IEnumerable<Type> AllArtifactTypes
-		=> CommonArtifacts.Concat(BossArtifacts);
+		=> CommonArtifacts.Concat(BossArtifacts).Concat(DuoArtifacts);
 
     
     public ModEntry(IPluginPackage<IModManifest> package, IModHelper helper, ILogger logger) : base(package, helper, logger)
 	{
 		Instance = this;
 		Harmony = new(package.Manifest.UniqueName);
+		HookManager = new(package.Manifest.UniqueName);
+		Api = new();
+
 		MoreDifficultiesApi = helper.ModRegistry.GetApi<IMoreDifficultiesApi>("TheJazMaster.MoreDifficulties");
+		EssentialsApi = helper.ModRegistry.GetApi<IEssentialsApi>("Nickel.Essentials");
 		KokoroApi = helper.ModRegistry.GetApi<IKokoroApi>("Shockah.Kokoro")!.V2;
-		// DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+		DuoArtifactsApi = helper.ModRegistry.GetApi<IDuoArtifactsApi>("Shockah.DuoArtifacts");
+		// TyAndSashaApi = helper.ModRegistry.GetApi<ITyAndSashaApi>("TheJazMaster.TyAndSasha");
+		JohnsonApi = helper.ModRegistry.GetApi<IJohnsonApi>("Shockah.Johnson");
+		BucketApi = helper.ModRegistry.GetApi<IBucketApi>("TheJazMaster.Bucket");
+		TuckerApi = helper.ModRegistry.GetApi<ITuckerApi>("TuckerTheSaboteur");
+		// DestinyApi = helper.ModRegistry.GetApi<IDestinyApi>("Shockah.Destiny");
+		TH34Api = helper.ModRegistry.GetApi<ITH34Api>("Fred.TH34");
+		DynaApi = helper.ModRegistry.GetApi<IDynaApi>("Shockah.Dyna");
 
 		AnyLocalizations = new JsonLocalizationProvider(
 			tokenExtractor: new SimpleLocalizationTokenExtractor(),
@@ -203,6 +242,18 @@ public sealed class ModEntry : SimpleMod {
 				}
 			}
 		};
+		// if (TyAndSashaApi != null) {
+		// 	helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += (card, data) => {
+		// 		State state = data.State;
+		// 		if (state.route is Combat combat && data.TraitStates[GemManager.GemTrait].IsActive) {
+		// 			foreach (Artifact item in data.State.EnumerateAllArtifacts()) {
+		// 				if (item is TigersEyeArtifact) {
+		// 					data.SetOverride(TyAndSashaApi.WildTrait, true);
+		// 				}
+		// 			}
+		// 		}
+		// 	};
+		// }
 
 		MoreDifficultiesApi?.RegisterAltStarters(LouisDeck.Deck, new StarterDeck {
             cards = {

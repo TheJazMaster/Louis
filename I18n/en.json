@@ -89,6 +89,68 @@
             "description": "All cards are <c=cardtrait>heavy. <c=downside>Draw -1 card every turn.</c>"
         }
     },
+    "duoArtifact": {
+        "FreeSpirited": {
+            "name": "FREE-SPIRITED",
+            "description": "Whenever you <c=keyword>exhaust</c> a card, draw a card. If it exhausted via <c=cardtrait>fleeting</c>, draw a card next turn instead."
+        },
+        "Paralyzer": {
+            "name": "PARALYZER",
+            "description": "The first time you would <c=action>enfeeble</c> a ship part each turn, <c=action>stun</c> it instead."
+        },
+        "DiamondSword": {
+            "name": "DIAMOND SWORD",
+            "description": "<c=peri>Peri</c> cards deal +1 damage while you have a <c=cardtrait>gem</c> in hand."
+        },
+        "CrystalOscillator": {
+            "name": "CRYSTAL OSCILLATOR",
+            "description": "The first time each turn you launch a <c=midrow>drone</c> while you have a <c=cardtrait>gem</c> in hand, it immediately takes a turn."
+        },
+        "FireStone": {
+            "name": "FIRE STONE",
+            "description": "While you have 3+ <c=status>heat</c>, all attacks inflict <c=keyword>2</c> <c=action>enfeeble</c>."
+        },
+        "RGBLED": {
+            "name": "RGB LED",
+            "description": "Cards to the <c=keyword>left</c> of <c=cardtrait>gems</c> deal +1 damage."
+        },
+        "InfinityGem": {
+            "name": "INFINITY GEM",
+            "description": "Whenever you play a card with a <c=status>SHARD</c> cost you can't pay, gain 1 <c=status>SHARD</c>."
+        },
+        "DiamondTier": {
+            "name": "DIAMOND TIER",
+            "description": "<c=card>Card offerings</c> in combat offer an extra card if there is a <c=cardtrait>gem</c> in hand."
+        },
+        "TigersEye": {
+            "name": "TIGER'S EYE",
+            "description": "<c=cardtrait>Gem</c> cards are <c=cardtrait>wild</c>."
+        },
+        "DiamondHands": {
+            "name": "DIAMOND HANDS",
+            "description": "<c=action>Strengthen</c> also increases the potency of <c=action>enfeeble</c>. The first time you play a <c=A63447>Louis</c> card each combat, <c=keyword>strengthen it by 1</c>."
+        },
+        "PositiveReinforcement": {
+            "name": "POSITIVE REINFORCEMENT",
+            "description": "Whenever you spend <c=status>REDRAW</c> on a <c=cardtrait>fleeting</c> card, gain 1 <c=status>SHIELD</c>."
+        },
+        "RockCrusher": {
+            "name": "ROCK CRUSHER",
+            "description": "<c=action>Blunt</c> attacks inflict 2 <c=action>enfeeble</c>."
+        },
+        "Transience": {
+            "name": "TRANSIENCE",
+            "description": "Whenever a card exhausts via <c=cardtrait>fleeting</c>, gain 1 <c=status>TEMP SHIELD</c>."
+        },
+        "QuartzResonator": {
+            "name": "QUARTZ RESONATOR",
+            "description": "While you have <c=status>PLUS CHARGE</c>, fulfill 1 <c=action>shard cost</c> on all cards that haven't been played yet this turn."
+        },
+        "GlitterBomb": {
+            "name": "GLITTER BOMB",
+            "description": "<c=action>Blastwave</c> inflicts 1 <c=action>enfeeble</c>."
+        }
+    },
     "card": {
         "Ruby": {
             "name": "Ruby"

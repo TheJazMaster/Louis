@@ -10,6 +10,7 @@ public class FleetingManager
 	static ModEntry Instance => ModEntry.Instance;
     static Harmony Harmony => Instance.Harmony;
     private static readonly IModCards CardsHelper = ModEntry.Instance.Helper.Content.Cards;
+    internal static bool IsFleetingHappening = false;
 
     internal static ICardTraitEntry FleetingTrait { get; private set; } = null!;
 

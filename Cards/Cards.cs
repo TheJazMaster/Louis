@@ -67,7 +67,7 @@ internal sealed class GlitzBlitzCard : Card, IHasCustomCardTraits, ILouisCard
 	public IReadOnlySet<ICardTraitEntry> GetInnateTraits(State state) => upgrade == Upgrade.A ? new HashSet<ICardTraitEntry>() { HeavyManager.HeavyTrait } : [];
 
 	public override List<CardAction> GetActions(State s, Combat c) => [
-	EnfeebleManager.MakeEnfeebleAttack(new AAttack {
+		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, 1)
 		}, upgrade == Upgrade.B ? 2 : 1),
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
@@ -1087,7 +1087,7 @@ internal sealed class LouisExeCard : Card, ILouisCard
 			Meta = new()
 			{
 				deck = Deck.colorless,
-				rarity = Rarity.common,
+				rarity = Rarity.uncommon,
 				upgradesTo = [Upgrade.A, Upgrade.B]
 			},
 			Art = helper.Content.Sprites.RegisterSprite(ModEntry.Instance.Package.PackageRoot.GetRelativeFile("Sprites/Cards/LouisExe.png")).Sprite,
@@ -1104,7 +1104,7 @@ internal sealed class LouisExeCard : Card, ILouisCard
 
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		new ACardOffering {
-			amount = upgrade == Upgrade.B ? 3 : 2,
+			amount = upgrade == Upgrade.B ? 5 : 3,
 			limitDeck = ModEntry.Instance.LouisDeck.Deck,
 			makeAllCardsTemporary = true,
 			overrideUpgradeChances = false,

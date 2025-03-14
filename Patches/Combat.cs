@@ -20,25 +20,48 @@ internal class CombatPatches
 			original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.TryPlayCard)),
 			transpiler: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_TryPlayCard_Transpiler))
 		);
+		harmony.TryPatch(
+            logger: Instance.Logger!,
+            original: AccessTools.DeclaredMethod(typeof(Combat), nameof(Combat.SendCardToExhaust)),
+            prefix: new HarmonyMethod(typeof(CombatPatches), nameof(Combat_SendCardToExhaust_Postfix))
+        );
+	}
+
+	private static void Combat_SendCardToExhaust_Postfix(Combat __instance, State s, Card card) {
+		foreach (Artifact item in s.EnumerateAllArtifacts()) {
+            if (item is IOnExhaustArtifact artifact)  {
+                artifact.OnExhaustCard(s, __instance, card);
+            }
+        }
 	}
 
 	private static IEnumerable<CodeInstruction> Combat_TryPlayCard_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase originalMethod)
 	{
-		return new SequenceBlockMatcher<CodeInstruction>(instructions)
+		new SequenceBlockMatcher<CodeInstruction>(instructions)
 			.Find(
 				ILMatches.Ldloc<CardData>(originalMethod).CreateLdlocInstruction(out var ldData),
-				ILMatches.Ldfld("exhaust"),
-				ILMatches.Ldarg(4),
-				ILMatches.Instruction(OpCodes.Or),
-				ILMatches.Stloc<bool>(originalMethod).CreateLdlocInstruction(out var ldLoc).CreateStlocInstruction(out var stLoc)
+				ILMatches.Ldfld("singleUse"),
+				ILMatches.Brfalse,
+				ILMatches.Ldloc(0),
+				ILMatches.Ldfld("card"),
+				ILMatches.Call("ExhaustFX")
+			);
+		return new SequenceBlockMatcher<CodeInstruction>(instructions)
+			.Find(
+				ILMatches.Ldloc<bool>(originalMethod).CreateLdlocInstruction(out var ldLoc).Anchor(out var anchor),
+				ILMatches.Brfalse,
+				ILMatches.Ldloc(0),
+				ILMatches.Ldfld("card"),
+				ILMatches.Call("ExhaustFX")
 			)
-			.PointerMatcher(SequenceMatcherRelativeElement.Last)
+			.Anchors()
+			.PointerMatcher(anchor)
 			.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 				new CodeInstruction(OpCodes.Ldarg_1),
 				ldData,
 				ldLoc,
 				new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(ApplyRose))),
-				stLoc
+				new CodeInstruction(OpCodes.And)
 			)
 			.AllElements();
 	}
@@ -53,6 +76,6 @@ internal class CombatPatches
 				}
 			}
 		}
-		return exhausts;
+		return true;
 	}
 }

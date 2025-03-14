@@ -15,6 +15,8 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
     internal static readonly string LastGemmedTurnKey = "LastGemmedTurn";
     internal static readonly string GemsLeftKey = "GemsLeft";
 
+    private static readonly Pool<AddToGemCountArgs> AddToGemCountPool = new(() => new());
+
     internal static ICardTraitEntry GemTrait { get; private set; } = null!;
     internal static ICardTraitEntry PreciousGemTrait { get; private set; } = null!;
 
@@ -88,8 +90,19 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
             if (excludedId == card.uuid) continue;
             if (CardsHelper.IsCardTraitActive(s, card, GemTrait)) total++;
             else if (CardsHelper.IsCardTraitActive(s, card, PreciousGemTrait)) total += 2;
+
         }
-        return total;
+        return AddToGemCountPool.Do(args => {
+            args.State = s;
+            args.Combat = c;
+            args.Amount = total;
+
+            foreach (ILouisApi.IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
+				args.Amount += hook.AddToGemCount(args);
+			}
+
+            return args.Amount;
+        });
     }
 
     public int GetCurrentResourceAmount(IKokoroApi.IV2.IActionCostsApi.IResourceProvider.IGetCurrentResourceAmountArgs args)
@@ -130,4 +143,11 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
         gemsLeft = Math.Max(gemsLeft - args.Amount, 0);
         ModData.SetModData(card, GemsLeftKey, gemsLeft);
     }
+
+	private sealed class AddToGemCountArgs : ILouisApi.IHook.IAddToGemCountArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public int Amount { get; set; }
+	}
 }
