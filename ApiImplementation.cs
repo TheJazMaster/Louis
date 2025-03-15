@@ -10,7 +10,9 @@ public sealed class ApiImplementation : ILouisApi
 
 	public int GemHandCount(State s, Combat c) => GemManager.GetGemHandCount(s, c);
 	public int GemHandCount(State s, Combat c, int? excludedId) => GemManager.GetGemHandCount(s, c, excludedId);
-	public AAttack MakeEnfeebleAttack(AAttack attack, int strength) => EnfeebleManager.MakeEnfeebleAttack(attack, strength);
+	public AAttack MakeEnfeebleAttack(AAttack attack, int strength) => EnfeebleManager.MakeEnfeebleAttack(attack, strength, null);
+	public AAttack MakeEnfeebleAttack(AAttack attack, int strength, Card card) => EnfeebleManager.MakeEnfeebleAttack(attack, strength, card);
+	public (int amount, int baseAmount, Card? fromCard) GetEnfeeble(State s, AAttack attack, bool duringRendering = false) => EnfeebleManager.GetEnfeeble(s, attack, duringRendering);
 	public bool EnfeeblePart(State s, Combat c, Part part, int amount, Card? fromCard = null) => EnfeebleManager.EnfeeblePart(s, c, part, amount, fromCard);
 	public GlossaryTooltip GetEnfeebleGlossary(int amount) => new(
             $"action.{typeof(EnfeebleManager).Namespace!}::Enfeeble") {

@@ -16,6 +16,7 @@ public class EnfeebleManager
 	private static IKokoroApi.IV2 KokoroApi => ModEntry.Instance.KokoroApi;
 
     internal static readonly string EnfeebleApplierKey = "EnfeebleApplier";
+	internal static readonly string EnfeebleSourceKey = "EnfeebleSource";
 
 	private static AAttack? AttackContext;
 
@@ -48,7 +49,7 @@ public class EnfeebleManager
 			if (part is null)
 				return;
 
-			(int amount, Card? fromCard) = GetEnfeeble(state, attack);
+			(int amount, _, Card? fromCard) = GetEnfeeble(state, attack);
 			if (amount == 0)
 				return;
 
@@ -77,25 +78,28 @@ public class EnfeebleManager
 			return true;
 	}
 
-    public static AAttack MakeEnfeebleAttack(AAttack attack, int strength) {
+    public static AAttack MakeEnfeebleAttack(AAttack attack, int strength, Card? card) {
+		if (card != null) attack.ApplyModData(EnfeebleSourceKey, card.uuid);
         return attack.ApplyModData(EnfeebleApplierKey, strength);
     }
 
-    public static (int amount, Card? fromCard) GetEnfeeble(State s, AAttack attack) {
+    public static (int amount, int baseAmount, Card? fromCard) GetEnfeeble(State s, AAttack attack, bool duringRendering = false) {
 		// if (!IsEnfeeble(attack)) return (0, null);
 
-		(int amount, Card? fromCard) = (ModData.GetModDataOrDefault(attack, EnfeebleApplierKey, 0), ModEntry.Instance.KokoroApi.ActionInfo.GetSourceCard(s, attack));
+		(int amount, int fromCardUuid) = (ModData.GetModDataOrDefault(attack, EnfeebleApplierKey, 0), ModData.GetModDataOrDefault(attack, EnfeebleSourceKey, -1));
 		return AdjustEnfeebleArgsPool.Do(args => {
 			args.State = s;
 			args.Amount = amount;
-			args.FromCard = fromCard;
+			args.BaseAmount = amount;
+			args.FromCard = fromCardUuid == -1 ? null : s.FindCard(fromCardUuid);
 			args.Attack = attack;
+			args.DuringRendering = duringRendering;
 			
 			foreach (IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
 				args.Amount += hook.AdjustEnfeeble(args);
 			}
 
-        	return (args.Amount, args.FromCard);
+        	return (args.Amount, args.BaseAmount, args.FromCard);
 		});
     }
 
@@ -114,16 +118,18 @@ public class EnfeebleManager
 		__result.Add(ModEntry.Instance.Api.GetEnfeebleGlossary(amount));
 	}
 
+	private static bool ignoreEnfeeble = false;
 	private static bool Card_RenderAction_Prefix(G g, State state, CardAction action, bool dontDraw, int shardAvailable, int stunChargeAvailable, int bubbleJuiceAvailable, ref int __result)
 	{
-		if (action is not AAttack attack)
+		if (action is not AAttack attack || ignoreEnfeeble)
 			return true;
 
-		int amount = GetEnfeeble(state, attack).amount;
+		(int amount, int baseAmount, Card? _) = GetEnfeeble(state, attack);
 		if (amount == 0)
 			return true;
 
-		ModEntry.Instance.Helper.ModData.RemoveModData(attack, EnfeebleApplierKey);
+		ignoreEnfeeble = true;
+		// ModEntry.Instance.Helper.ModData.RemoveModData(attack, EnfeebleApplierKey);
 
 		var position = g.Push(rect: new()).rect.xy;
 		int initialX = (int)position.x;
@@ -144,7 +150,8 @@ public class EnfeebleManager
 		}
 		__result += amount.ToString().Length * 6;
 
-		ModEntry.Instance.Helper.ModData.SetModData(attack, EnfeebleApplierKey, amount);
+		ignoreEnfeeble = false;
+		// ModEntry.Instance.Helper.ModData.SetModData(attack, EnfeebleApplierKey, baseAmount);
 		return false;
 	}
 
@@ -159,7 +166,9 @@ public class EnfeebleManager
 
 	private sealed class AdjustEnfeebleArgs : IHook.IAdjustEnfeebleArgs {
 		public State State { get; set; } = null!;
+		public int BaseAmount { get; set; }
 		public int Amount { get; set; }
+		public bool DuringRendering { get; set; }
 		public Card? FromCard { get; set; }
 		public AAttack Attack { get; set; } = null!;
 	}

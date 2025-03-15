@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Nickel;
 
 #nullable enable
@@ -8,6 +9,8 @@ public interface ILouisApi
 	int GemHandCount(State s, Combat c);
 	int GemHandCount(State s, Combat c, int? excludedId);
 	AAttack MakeEnfeebleAttack(AAttack attack, int strength);
+	AAttack MakeEnfeebleAttack(AAttack attack, int strength, Card card);
+	(int amount, int baseAmount, Card? fromCard) GetEnfeeble(State s, AAttack attack, bool duringRendering = false);
 	
 	// Returns whether it succeeded in enfeebling an attack intent
 	bool EnfeeblePart(State s, Combat c, Part part, int amount, Card? fromCard = null);
@@ -45,9 +48,20 @@ public interface ILouisApi
 		public interface IAdjustEnfeebleArgs
 		{
 			State State { get; }
+			int BaseAmount { get; }
 			int Amount { get; set; }
+			bool DuringRendering { get; }
 			Card? FromCard { get; set; }
 			AAttack Attack { get; }
+		}
+
+		void BeforeFleetingExhaust(IBeforeFleetingExhaustArgs args) {}
+
+		public interface IBeforeFleetingExhaustArgs
+		{
+			State State { get; }
+			Combat Combat { get; }
+			List<Card> Cards { get; }
 		}
 
 		void OnFleetingExhaust(IOnFleetingExhaustArgs args) {}
@@ -56,7 +70,7 @@ public interface ILouisApi
 		{
 			State State { get; }
 			Combat Combat { get; }
-			Card Card { get; }
+			List<Card> Cards { get; }
 		}
 
 		int AddToGemCount(IAddToGemCountArgs args) => 0;

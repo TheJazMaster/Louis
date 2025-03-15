@@ -11,6 +11,7 @@ public class AExhaustFleeting : CardAction
 	static readonly IModCards CardsHelper = ModEntry.Instance.Helper.Content.Cards;
 	public bool ignoreHeavy = true;
 
+	private static readonly Pool<BeforeFleetingExhaustArgs> BeforeFleetingExhaustPool = new(() => new());
 	private static readonly Pool<OnFleetingExhaustArgs> OnFleetingExhaustPool = new(() => new());
 
 	public override void Begin(G g, State s, Combat c)
@@ -23,30 +24,47 @@ public class AExhaustFleeting : CardAction
 			}
 		}
 		FleetingManager.IsFleetingHappening = true;
+
+		BeforeFleetingExhaustPool.Do(args => {
+			args.State = s;
+			args.Combat = c;
+			args.Cards = toExhaust;
+
+			foreach (ILouisApi.IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
+				hook.BeforeFleetingExhaust(args);
+			}
+		});
 		foreach (Card card in toExhaust) {
 			card.ExhaustFX();
 			Audio.Play(Event.CardHandling);
 			c.hand.Remove(card);
 			c.SendCardToExhaust(s, card);
 			timer = 0.3;
-			
-			OnFleetingExhaustPool.Do(args => {
-				args.State = s;
-				args.Combat = c;
-				args.Card = card;
-			
-				foreach (ILouisApi.IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
-					hook.OnFleetingExhaust(args);
-				}
-			});
 		}
+
+		OnFleetingExhaustPool.Do(args => {
+			args.State = s;
+			args.Combat = c;
+			args.Cards = toExhaust;
+
+			foreach (ILouisApi.IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
+				hook.OnFleetingExhaust(args);
+			}
+		});
 		FleetingManager.IsFleetingHappening = false;
+	}
+
+	private sealed class BeforeFleetingExhaustArgs : ILouisApi.IHook.IBeforeFleetingExhaustArgs
+	{
+		public State State { get; set; } = null!;
+		public Combat Combat { get; set; } = null!;
+		public List<Card> Cards { get; set; } = null!;
 	}
 
 	private sealed class OnFleetingExhaustArgs : ILouisApi.IHook.IOnFleetingExhaustArgs
 	{
 		public State State { get; set; } = null!;
 		public Combat Combat { get; set; } = null!;
-		public Card Card { get; set; } = null!;
+		public List<Card> Cards { get; set; } = null!;
 	}
 }

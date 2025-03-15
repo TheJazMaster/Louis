@@ -69,15 +69,15 @@ internal sealed class GlitzBlitzCard : Card, IHasCustomCardTraits, ILouisCard
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, 1)
-		}, upgrade == Upgrade.B ? 2 : 1),
+		}, upgrade == Upgrade.B ? 2 : 1, this),
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, 1),
 			shardcost = 1
-		}, upgrade == Upgrade.B ? 2 : 1),
+		}, upgrade == Upgrade.B ? 2 : 1, this),
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, 1),
 			shardcost = 1
-		}, upgrade == Upgrade.B ? 2 : 1)
+		}, upgrade == Upgrade.B ? 2 : 1, this)
 	];
 }
 
@@ -301,7 +301,7 @@ internal sealed class GlamourShotCard : Card, ILouisCard
 		Upgrade.B => [
 			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 				damage = GetDmg(s, 2)
-			}, 3),
+			}, 3, this),
 			new AEnergy {
 				changeAmount = 1,
 				shardcost = 1
@@ -314,7 +314,7 @@ internal sealed class GlamourShotCard : Card, ILouisCard
 		_ => [
 			EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 				damage = GetDmg(s, upgrade == Upgrade.A ? 3 : 2)
-			}, upgrade == Upgrade.A ? 4 : 3),
+			}, upgrade == Upgrade.A ? 4 : 3, this),
 			new AEnergy {
 				changeAmount = 1,
 				shardcost = 1
@@ -561,7 +561,7 @@ internal sealed class HeartBreakerCard : Card, IHasCustomCardTraits, ILouisCard
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, upgrade == Upgrade.B ? 6 : (upgrade == Upgrade.A ? 5 : 4)),
-		}, upgrade == Upgrade.B ? 4 : (upgrade == Upgrade.A ? 3 : 2))
+		}, upgrade == Upgrade.B ? 4 : (upgrade == Upgrade.A ? 3 : 2), this)
 	];
 }
 
@@ -684,7 +684,7 @@ internal sealed class EnsnareCard : Card, ILouisCard
 	public override List<CardAction> GetActions(State s, Combat c) => [
 		EnfeebleManager.MakeEnfeebleAttack(new AAttack {
 			damage = GetDmg(s, upgrade == Upgrade.B ? 2 : 1)
-		}, upgrade == Upgrade.B ? 6 : 4)
+		}, upgrade == Upgrade.B ? 6 : 4, this)
 	];
 }
 

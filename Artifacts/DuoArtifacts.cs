@@ -14,7 +14,7 @@ using static Shockah.Kokoro.IKokoroApi.IV2.IRedrawStatusApi.IHook;
 
 namespace TheJazMaster.Louis.Artifacts;
 
-internal sealed class FreeSpiritedArtifact : Artifact, ILouisArtifact, IOnExhaustArtifact
+internal sealed class FreeSpiritedArtifact : Artifact, ILouisArtifact, IOnExhaustArtifact, ILouisApi.IHook
 {
 	private static string ArtifactName = null!;
 	public static void Register(IModHelper helper)
@@ -37,16 +37,20 @@ internal sealed class FreeSpiritedArtifact : Artifact, ILouisArtifact, IOnExhaus
 
 	public void OnExhaustCard(State s, Combat c, Card card)
 	{
-		if (FleetingManager.IsFleetingHappening) {
-			c.QueueImmediate(new AStatus {
-				status = Status.drawNextTurn,
-				statusAmount = 1,
-				targetPlayer = true,
-				artifactPulse = Key()
-			});
-		} else {
+		if (!FleetingManager.IsFleetingHappening) {
 			c.QueueImmediate(new ADrawCard {
 				count = 1,
+				artifactPulse = Key()
+			});
+		}
+	}
+
+	public void OnFleetingExhaust(ILouisApi.IHook.IOnFleetingExhaustArgs args) {
+		if (FleetingManager.IsFleetingHappening) {
+			args.Combat.QueueImmediate(new AStatus {
+				status = Status.drawNextTurn,
+				statusAmount = args.Cards.Count,
+				targetPlayer = true,
 				artifactPulse = Key()
 			});
 		}
@@ -58,7 +62,6 @@ internal sealed class FreeSpiritedArtifact : Artifact, ILouisArtifact, IOnExhaus
 internal sealed class ParalyzerArtifact : Artifact, ILouisArtifact, ILouisApi.IHook, IHookPriority
 {
 	public bool active = true;
-	private bool renderStun = true;
 	public int lastUuid = -1;
 
 	private static string ArtifactName = null!;
@@ -81,16 +84,6 @@ internal sealed class ParalyzerArtifact : Artifact, ILouisArtifact, ILouisApi.IH
 			Description = ModEntry.Instance.AnyLocalizations.Bind(["duoArtifact", ArtifactName, "description"]).Localize
 		});
 		ModEntry.Instance.DuoArtifactsApi.RegisterDuoArtifact<ParalyzerArtifact>([Deck.dizzy, ModEntry.Instance.LouisDeck.Deck]);
-
-		ModEntry.Instance.Harmony.TryPatch(
-			logger: ModEntry.Instance.Logger,
-			original: AccessTools.DeclaredMethod(typeof(Card), nameof(Card.GetActionsOverridden)),
-			prefix: new HarmonyMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(Card_GetActionsOverridden_Prefix))
-		);
-	}
-
-	private static void Card_GetActionsOverridden_Prefix(State s, Combat c, Card __instance) {
-		s.EnumerateAllArtifacts().Do(a => {if (a is ParalyzerArtifact p) p.renderStun = true;});
 	}
 
 	public override void OnTurnStart(State state, Combat combat) {
@@ -100,22 +93,12 @@ internal sealed class ParalyzerArtifact : Artifact, ILouisArtifact, ILouisApi.IH
 	public bool BeforeEnfeeble(ILouisApi.IHook.IBeforeEnfeebleArgs args) {
 		if (active) {
 			active = false;
-			// args.Combat.QueueImmediate(new AStunPart {
-			// 	worldX = args.WorldX
-			// });
+			args.Combat.QueueImmediate(new AStunPart {
+				worldX = args.WorldX
+			});
 			Pulse();
 		}
 		return true;
-	}
-
-	public int AdjustEnfeeble(ILouisApi.IHook.IAdjustEnfeebleArgs args) {
-		if (active && renderStun && args.Amount > 0) {
-			renderStun = false;
-			lastUuid = args.FromCard?.uuid ?? -1;
-			args.Attack.stunEnemy = true;
-			return -args.Amount;
-		}
-		return 0;
 	}
 
 	public override List<Tooltip>? GetExtraTooltips() => [
@@ -295,6 +278,7 @@ internal sealed class InfinityGemArtifact : Artifact, ILouisArtifact, IKokoroApi
 
 	public override void OnPlayerPlayCard(int energyCost, Deck deck, Card card, State state, Combat combat, int handPosition, int handCount)
 	{
+		ModEntry.Instance.KokoroApi.ActionCosts.MakeStatusResource(Status.shard, true);
 		cardJustPlayedUuid = -1;
 	}
 
@@ -419,7 +403,9 @@ internal sealed class DiamondHandsArtifact : Artifact, ILouisArtifact, ILouisApi
 	{
 		if (card.GetMeta().deck != ModEntry.Instance.LouisDeck.Deck || strenghtenedThisCombat.Contains(card.uuid)) return;
 
-		ModEntry.Instance.JohnsonApi!.AddStrengthen(card, 1);
+		var a = ModEntry.Instance.JohnsonApi!.MakeStrengthenAction(card.uuid, 1);
+		a.artifactPulse = Key();
+		combat.Queue(a);
 		strenghtenedThisCombat.Add(card.uuid);
 	}
 
@@ -502,7 +488,7 @@ internal sealed class RockCrusherArtifact : Artifact, ILouisArtifact, ILouisApi.
 	}
 
 	public int AdjustEnfeeble(ILouisApi.IHook.IAdjustEnfeebleArgs args) {
-		if (args.FromCard != null) return ModEntry.Instance.JohnsonApi!.GetStrengthen(args.FromCard);
+		if (ModEntry.Instance.TuckerApi!.IsBluntAttack(args.Attack)) return 2;
 		return 0;
 	}
 
@@ -536,7 +522,7 @@ internal sealed class TransienceArtifact : Artifact, ILouisArtifact, ILouisApi.I
 	public void OnFleetingExhaust(ILouisApi.IHook.IOnFleetingExhaustArgs args) {
 		args.Combat.QueueImmediate(new AStatus {
 			status = Status.tempShield,
-			statusAmount = 1,
+			statusAmount = args.Cards.Count,
 			targetPlayer = true
 		});
 	}
