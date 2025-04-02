@@ -159,7 +159,7 @@ public sealed class ModEntry : SimpleMod {
 		BucketApi = helper.ModRegistry.GetApi<IBucketApi>("TheJazMaster.Bucket");
 		TuckerApi = helper.ModRegistry.GetApi<ITuckerApi>("TuckerTheSaboteur");
 		// DestinyApi = helper.ModRegistry.GetApi<IDestinyApi>("Shockah.Destiny");
-		TH34Api = helper.ModRegistry.GetApi<ITH34Api>("Fred.TH34");
+		TH34Api = helper.ModRegistry.GetApi<ITH34Api>("FredsTH34");
 		DynaApi = helper.ModRegistry.GetApi<IDynaApi>("Shockah.Dyna");
 
 		AnyLocalizations = new JsonLocalizationProvider(
@@ -242,18 +242,6 @@ public sealed class ModEntry : SimpleMod {
 				}
 			}
 		};
-		// if (TyAndSashaApi != null) {
-		// 	helper.Content.Cards.OnGetFinalDynamicCardTraitOverrides += (card, data) => {
-		// 		State state = data.State;
-		// 		if (state.route is Combat combat && data.TraitStates[GemManager.GemTrait].IsActive) {
-		// 			foreach (Artifact item in data.State.EnumerateAllArtifacts()) {
-		// 				if (item is TigersEyeArtifact) {
-		// 					data.SetOverride(TyAndSashaApi.WildTrait, true);
-		// 				}
-		// 			}
-		// 		}
-		// 	};
-		// }
 
 		MoreDifficultiesApi?.RegisterAltStarters(LouisDeck.Deck, new StarterDeck {
             cards = {

@@ -23,7 +23,7 @@ public class FleetingManager
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::Fleeting")
 				{
 					Icon = Instance.FleetingIcon.Sprite,
-					TitleColor = Colors.action,
+					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["trait", "fleeting", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["trait", "fleeting", "description"]),
 				}

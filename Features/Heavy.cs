@@ -31,7 +31,7 @@ public class HeavyManager
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::Heavy") {
                     Icon = Instance.HeavyIcon.Sprite,
-                    TitleColor = Colors.action,
+                    TitleColor = Colors.cardtrait,
                     Title = ModEntry.Instance.Localizations.Localize(["trait", "heavy", "name"]),
                     Description = ModEntry.Instance.Localizations.Localize(["trait", "heavy", "description"]),
                 }
@@ -43,7 +43,7 @@ public class HeavyManager
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::HeavyUsed") {
                     Icon = Instance.HeavyUsedIcon.Sprite,
-                    TitleColor = Colors.action,
+                    TitleColor = Colors.cardtrait,
                     Title = ModEntry.Instance.Localizations.Localize(["trait", "heavy", "nameUsed"]),
                     Description = ModEntry.Instance.Localizations.Localize(["trait", "heavy", "description"]),
                 }

@@ -92,7 +92,7 @@
     "duoArtifact": {
         "FreeSpirited": {
             "name": "FREE-SPIRITED",
-            "description": "Whenever you <c=keyword>exhaust</c> a card, draw a card. If it exhausted via <c=cardtrait>fleeting</c>, draw a card next turn instead."
+            "description": "Whenever you <c=cardtrait>exhaust</c> a card, draw a card. If it exhausted via <c=cardtrait>fleeting</c>, draw a card next turn instead."
         },
         "Paralyzer": {
             "name": "PARALYZER",
@@ -108,7 +108,7 @@
         },
         "FireStone": {
             "name": "FIRE STONE",
-            "description": "While you have 3+ <c=status>heat</c>, all attacks inflict <c=keyword>2</c> <c=action>enfeeble</c>."
+            "description": "While you have 3+ <c=status>heat</c>, all attacks inflict 2 <c=action>enfeeble</c>."
         },
         "RGBLED": {
             "name": "RGB LED",
@@ -128,7 +128,7 @@
         },
         "DiamondHands": {
             "name": "DIAMOND HANDS",
-            "description": "<c=action>Strengthen</c> also increases the potency of <c=action>enfeeble</c>. The first time you play a <c=A63447>Louis</c> card each combat, <c=keyword>strengthen it by 1</c>."
+            "description": "<c=action>Strengthen</c> also increases the potency of <c=action>enfeeble</c>. The first time you play a <c=A63447>Louis</c> card each combat, <c=action>strengthen it by 1</c>."
         },
         "PositiveReinforcement": {
             "name": "POSITIVE REINFORCEMENT",

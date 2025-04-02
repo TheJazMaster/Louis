@@ -73,9 +73,9 @@ public interface ILouisApi
 			List<Card> Cards { get; }
 		}
 
-		int AddToGemCount(IAddToGemCountArgs args) => 0;
+		int AddToPassiveShardPay(IAddToPassiveShardPayArgs args) => 0;
 
-		public interface IAddToGemCountArgs
+		public interface IAddToPassiveShardPayArgs
 		{
 			State State { get; }
 			Combat Combat { get; }

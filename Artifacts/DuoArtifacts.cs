@@ -94,9 +94,9 @@ internal sealed class ParalyzerArtifact : Artifact, ILouisArtifact, ILouisApi.IH
 		if (active) {
 			active = false;
 			args.Combat.QueueImmediate(new AStunPart {
-				worldX = args.WorldX
+				worldX = args.WorldX,
+				artifactPulse = Key()
 			});
-			Pulse();
 		}
 		return true;
 	}
@@ -130,7 +130,7 @@ internal sealed class DiamondSwordArtifact : Artifact, ILouisArtifact
 
 	public override int ModifyBaseDamage(int baseDamage, Card? card, State state, Combat? combat, bool fromPlayer)
 	{
-		if (combat != null && card != null && card.GetMeta().deck == Deck.peri && GemManager.GetGemHandCount(state, combat) > 0) {
+		if (combat != null && card != null && card.GetMeta().deck == Deck.peri && ModEntry.Instance.Api.GemHandCount(state, combat) > 0) {
 			return 1;
 		}
 		return 0;
@@ -179,7 +179,7 @@ internal sealed class CrystalOscillatorArtifact : Artifact, ILouisArtifact
 	public override List<Tooltip>? GetExtraTooltips() => [ .. ModEntry.Instance.Api.GemTrait.Configuration.Tooltips!(DB.fakeState, null) ];
 }
 
-internal sealed class FireStoneArtifact : Artifact, ILouisArtifact
+internal sealed class FireStoneArtifact : Artifact, ILouisArtifact, ILouisApi.IHook
 {
 	private static string ArtifactName = null!;
 	public static void Register(IModHelper helper)
@@ -200,13 +200,20 @@ internal sealed class FireStoneArtifact : Artifact, ILouisArtifact
 		ModEntry.Instance.DuoArtifactsApi.RegisterDuoArtifact<FireStoneArtifact>([Deck.eunice, ModEntry.Instance.LouisDeck.Deck]);
 	}
 
-	public override void OnEnemyGetHit(State state, Combat combat, Part? part)
-	{
-		if (part != null && state.ship.Get(Status.heat) >= 3) {
-			ModEntry.Instance.Api.EnfeeblePart(state, combat, part, 2);
-			Pulse();
+	public int AdjustEnfeeble(ILouisApi.IHook.IAdjustEnfeebleArgs args) {
+		if (args.State.ship.Get(Status.heat) >= 3) {
+			return 2;
 		}
+		return 0;
 	}
+
+	// public override void OnEnemyGetHit(State state, Combat combat, Part? part)
+	// {
+	// 	if (part != null && state.ship.Get(Status.heat) >= 3) {
+	// 		ModEntry.Instance.Api.EnfeeblePart(state, combat, part, 2);
+	// 		Pulse();
+	// 	}
+	// }
 
 	public override List<Tooltip>? GetExtraTooltips() => [
 		.. StatusMeta.GetTooltips(Status.heat, MG.inst.g.state.ship.heatTrigger),
@@ -245,6 +252,7 @@ internal sealed class RGBLEDArtifact : Artifact, ILouisArtifact
 		for (int i = pos + 1; i < combat.hand.Count; i++) {
 			Card crd = combat.hand[i];
 			if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, crd, ModEntry.Instance.Api.GemTrait)) return 1;
+			if (ModEntry.Instance.Helper.Content.Cards.IsCardTraitActive(state, crd, ModEntry.Instance.Api.PreciousGemTrait)) return 1;
 		}
 		return 0;
 	}
@@ -297,7 +305,7 @@ internal sealed class InfinityGemArtifact : Artifact, ILouisArtifact, IKokoroApi
 	}
 
 	public override List<Tooltip>? GetExtraTooltips() => [
-		.. StatusMeta.GetTooltips(Status.shard, 1)
+		.. StatusMeta.GetTooltips(Status.shard, 3)
 	];
 }
 
@@ -332,7 +340,7 @@ internal sealed class DiamondTierArtifact : Artifact, ILouisArtifact
 
 	private static void ACardOffering_BeginWithRoute_Prefix(G g, State s, Combat c, ACardOffering __instance) {
 		Artifact? artifact = s.EnumerateAllArtifacts().FirstOrDefault(a => a is DiamondTierArtifact, null);
-		if (__instance.inCombat && __instance.amount < 7 && artifact != null && GemManager.GetGemHandCount(s, c) > 0) {
+		if (__instance.inCombat && __instance.amount < 7 && artifact != null && ModEntry.Instance.Api.GemHandCount(s, c) > 0) {
 			__instance.amount++;
 			__instance.artifactPulse = artifact.Key();
 		}
@@ -536,12 +544,12 @@ internal sealed class TransienceArtifact : Artifact, ILouisArtifact, ILouisApi.I
 internal sealed class QuartzResonatorArtifact : Artifact, ILouisArtifact, ILouisApi.IHook
 {
 	private static string ArtifactName = null!;
-	private static Status MinusChargeStatus;
+	private static Status PlusChargeStatus;
 	public static void Register(IModHelper helper)
 	{
 		if (ModEntry.Instance.DuoArtifactsApi == null || ModEntry.Instance.TH34Api == null) return;
 		ArtifactName = MethodBase.GetCurrentMethod()!.DeclaringType!.Name[..^8];
-		MinusChargeStatus = ModEntry.Instance.TH34Api!.MinusChargeStatus.Status;
+		PlusChargeStatus = ModEntry.Instance.TH34Api!.PlusChargeStatus.Status;
 		helper.Content.Artifacts.RegisterArtifact(ArtifactName, new()
 		{
 			ArtifactType = MethodBase.GetCurrentMethod()!.DeclaringType!,
@@ -556,14 +564,14 @@ internal sealed class QuartzResonatorArtifact : Artifact, ILouisArtifact, ILouis
 		ModEntry.Instance.DuoArtifactsApi.RegisterDuoArtifact<QuartzResonatorArtifact>([ModEntry.Instance.TH34Api.TH34_Deck.Deck, ModEntry.Instance.LouisDeck.Deck]);
 	}
 
-	public int AddToGemCount(ILouisApi.IHook.IAddToGemCountArgs args) {
-		if (args.State.ship.Get(MinusChargeStatus) > 0) return 1;
+	public int AddToPassiveShardPay(ILouisApi.IHook.IAddToPassiveShardPayArgs args) {
+		if (args.State.ship.Get(PlusChargeStatus) > 0) return 1;
 		return 0;
 	}
 
 	public override List<Tooltip>? GetExtraTooltips() => [
-		.. StatusMeta.GetTooltips(MinusChargeStatus, 1),
-		.. StatusMeta.GetTooltips(Status.shard, 1)
+		.. StatusMeta.GetTooltips(PlusChargeStatus, 1),
+		.. StatusMeta.GetTooltips(Status.shard, 3)
 	];
 }
 
@@ -597,4 +605,9 @@ internal sealed class GlitterBombArtifact : Artifact, ILouisArtifact, IDynaHook
 		
 		if (ModEntry.Instance.Api.EnfeeblePart(state, combat, part, 1)) Pulse();
 	}
+
+	public override List<Tooltip>? GetExtraTooltips() => [
+		.. ModEntry.Instance.DynaApi!.SetBlastwave(new AAttack(), 1).GetTooltips(DB.fakeState),
+		ModEntry.Instance.Api.GetEnfeebleGlossary(1)
+	];
 }

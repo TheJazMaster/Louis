@@ -4,7 +4,6 @@ using Nickel;
 using Shockah.Kokoro;
 
 namespace TheJazMaster.Louis.Features;
-#nullable enable
 
 public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
 {
@@ -15,7 +14,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
     internal static readonly string LastGemmedTurnKey = "LastGemmedTurn";
     internal static readonly string GemsLeftKey = "GemsLeft";
 
-    private static readonly Pool<AddToGemCountArgs> AddToGemCountPool = new(() => new());
+    private static readonly Pool<AddToPassiveShardPayArgs> AddToPassiveShardPayPool = new(() => new());
 
     internal static ICardTraitEntry GemTrait { get; private set; } = null!;
     internal static ICardTraitEntry PreciousGemTrait { get; private set; } = null!;
@@ -31,7 +30,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::Gem")
 				{
 					Icon = Instance.GemIcon.Sprite,
-					TitleColor = Colors.action,
+					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["trait", "gem", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["trait", "gem", "description"]),
 				}
@@ -44,7 +43,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::PreciousGem")
 				{
 					Icon = Instance.PreciousGemIcon.Sprite,
-					TitleColor = Colors.action,
+					TitleColor = Colors.cardtrait,
 					Title = ModEntry.Instance.Localizations.Localize(["trait", "preciousGem", "name"]),
 					Description = ModEntry.Instance.Localizations.Localize(["trait", "preciousGem", "description"]),
 				}
@@ -90,15 +89,18 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
             if (excludedId == card.uuid) continue;
             if (CardsHelper.IsCardTraitActive(s, card, GemTrait)) total++;
             else if (CardsHelper.IsCardTraitActive(s, card, PreciousGemTrait)) total += 2;
-
         }
-        return AddToGemCountPool.Do(args => {
+        return total;
+    }
+
+    public static int GetPassiveShardPayAmount(State s, Combat c, int? excludedId = null) {
+        return AddToPassiveShardPayPool.Do(args => {
             args.State = s;
             args.Combat = c;
-            args.Amount = total;
+            args.Amount = GetGemHandCount(s, c, excludedId);
 
             foreach (ILouisApi.IHook hook in ModEntry.Instance.HookManager.GetHooksWithProxies(ModEntry.Instance.Helper.Utilities.ProxyManager, s.EnumerateAllArtifacts())) {
-				args.Amount += hook.AddToGemCount(args);
+				args.Amount += hook.AddToPassiveShardPay(args);
 			}
 
             return args.Amount;
@@ -114,7 +116,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
         
         int lastGemmedTurn = args.Combat == DB.fakeCombat ? 0 : ModData.GetModDataOrDefault<int>(card, LastGemmedTurnKey);
         int gemsLeft = lastGemmedTurn < args.Combat.turn
-            ? GetGemHandCount(args.State, args.Combat, args.Card?.uuid)
+            ? GetPassiveShardPayAmount(args.State, args.Combat, args.Card?.uuid)
             : ModData.GetModDataOrDefault<int>(card, GemsLeftKey);
         
         return Math.Max(gemsLeft, 0);
@@ -132,7 +134,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
         
         if (lastGemmedTurn < args.Combat.turn)
         {
-            gemsLeft = GetGemHandCount(args.State, args.Combat, args.Card?.uuid);
+            gemsLeft = GetPassiveShardPayAmount(args.State, args.Combat, args.Card?.uuid);
             ModData.SetModData(card, LastGemmedTurnKey, args.Combat.turn);
         }
         else
@@ -144,7 +146,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
         ModData.SetModData(card, GemsLeftKey, gemsLeft);
     }
 
-	private sealed class AddToGemCountArgs : ILouisApi.IHook.IAddToGemCountArgs
+	private sealed class AddToPassiveShardPayArgs : ILouisApi.IHook.IAddToPassiveShardPayArgs
 	{
 		public State State { get; set; } = null!;
 		public Combat Combat { get; set; } = null!;
