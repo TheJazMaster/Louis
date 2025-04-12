@@ -27,7 +27,7 @@ public class HeavyManager
         ];
         HeavyTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Heavy", new() {
             Icon = (_, _) => Instance.HeavyIcon.Sprite,
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "heavy"]).Localize,
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "heavy", "name"]).Localize,
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::Heavy") {
                     Icon = Instance.HeavyIcon.Sprite,
@@ -39,7 +39,7 @@ public class HeavyManager
         });
         HeavyUsedTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("HeavyUsed", new() {
             Icon = (_, _) => Instance.HeavyUsedIcon.Sprite,
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "heavy"]).Localize,
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "heavy", "name"]).Localize,
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::HeavyUsed") {
                     Icon = Instance.HeavyUsedIcon.Sprite,
@@ -80,7 +80,8 @@ public class HeavyManager
 			.Insert(SequenceMatcherPastBoundsDirection.After, SequenceMatcherInsertionResultingBounds.IncludingInsertion,
 				new CodeInstruction(OpCodes.Ldarg_1),
 				ldLoc.Value,
-				new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(FilterHeavy))),
+                new(OpCodes.Ldarg_2), //bool ignoreRetain
+				new CodeInstruction(OpCodes.Call, AccessTools.DeclaredMethod(MethodBase.GetCurrentMethod()!.DeclaringType!, nameof(FilterHeavyIfApplicable))),
 				stLoc.Value
 			)
 			.AllElements();
@@ -95,8 +96,10 @@ public class HeavyManager
         }
     }
 
-    private static List<Card> FilterHeavy(State s, List<Card> list) {
-        return list.Where(card => !CardsHelper.IsCardTraitActive(s, card, HeavyTrait)).ToList();
+    private static List<Card> FilterHeavyIfApplicable(State s, List<Card> list, bool ignoreRetain) {
+        if (ignoreRetain)
+            return list.Where(card => !CardsHelper.IsCardTraitActive(s, card, HeavyTrait)).ToList();
+        return list;
     }
 
     private static void Combat_DrawCardIdx_Postfix(State s, int drawIdx, CardDestination from, Card __result) {

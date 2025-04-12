@@ -25,7 +25,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
     {   
         GemTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("Gem", new() {
             Icon = (_, _) => Instance.GemIcon.Sprite,
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "gem"]).Localize,
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "gem", "name"]).Localize,
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::Gem")
 				{
@@ -38,7 +38,7 @@ public class GemManager : IKokoroApi.IV2.IActionCostsApi.IResourceProvider
         });
         PreciousGemTrait = ModEntry.Instance.Helper.Content.Cards.RegisterTrait("PreciousGem", new() {
             Icon = (_, _) => Instance.PreciousGemIcon.Sprite,
-            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "preciousGem"]).Localize,
+            Name = ModEntry.Instance.AnyLocalizations.Bind(["trait", "preciousGem", "name"]).Localize,
             Tooltips = (_, _) => [
                 new GlossaryTooltip($"trait.{GetType().Namespace!}::PreciousGem")
 				{
